@@ -1,0 +1,101 @@
+id,product_name,category,daily_sales,current_stock,price,trend
+1,Fresh Whole Milk 1L,Dairy,145,450,3.50,+12%
+2,Whole Wheat Bread,Bakery,210,120,2.80,+5%
+3,Free Range Eggs 12pk,Dairy,180,300,4.99,-2%
+4,Basmati Rice 5kg,Pantry,45,80,14.50,+15%
+5,Olive Cooking Oil 1L,Pantry,30,110,9.99,Stable
+6,Chocolate Biscuits,Snacks,120,500,3.20,+8%
+7,Packaged Potato Snacks,Snacks,350,800,1.99,+22%
+8,Cola Soft Drinks 2L,Beverages,280,150,2.50,+45%
+9,Premium Tea Powder,Beverages,40,200,6.50,-5%
+10,Instant Coffee 200g,Beverages,95,320,8.99,+4%
+11,Refined Sugar 1kg,Pantry,110,400,2.10,Stable
+12,Sea Salt 500g,Pantry,65,250,1.50,Stable
+13,Instant Noodles 6pk,Pantry,410,900,4.50,+30%
+14,Milk Chocolate Bar,Candy,150,600,1.80,+12%
+15,Gummy Bear Candy,Candy,85,300,2.20,+5%
+16,Antibacterial Bath Soap,Personal Care,190,550,1.25,Stable
+17,Anti-Dandruff Shampoo,Personal Care,75,180,6.99,-8%
+18,Mint Toothpaste,Personal Care,130,420,3.49,Stable
+19,Liquid Laundry Detergent,Household,45,120,12.99,+3%
+20,Lemon Dishwash Liquid,Household,80,250,4.50,Stable
+21,Spiral Notebook 100pg,Stationery,15,400,2.99,-45%
+22,Blue Ballpoint Pens 5pk,Stationery,20,500,3.50,-30%
+23,HB Pencils 12pk,Stationery,12,350,2.10,-40%
+24,Facial Tissues 100s,Household,210,800,1.99,+18%
+25,Almond Hair Oil,Personal Care,25,90,7.50,-2%
+26,Liquid Handwash,Personal Care,160,300,2.99,+8%
+27,Aloe Vera Face Wash,Personal Care,85,150,5.99,+14%
+28,Tear-Free Baby Shampoo,Baby Products,40,110,8.50,+5%
+29,Baby Diapers Size 3,Baby Products,120,250,24.99,Stable
+30,Baby Wet Wipes,Baby Products,145,400,3.99,+10%
+31,Unsalted Butter 250g,Dairy,90,180,4.20,-5%
+32,Cheddar Cheese Block,Dairy,60,120,5.50,+2%
+33,Greek Yogurt 500g,Dairy,110,150,4.80,+18%
+34,Tomato Ketchup,Pantry,75,200,2.99,Stable
+35,Mayonnaise 400g,Pantry,50,130,3.50,Stable
+36,Peanut Butter Crunchy,Pantry,40,160,4.99,-2%
+37,Strawberry Jam,Pantry,35,140,3.80,-8%
+38,Orange Juice 1L,Beverages,140,220,3.99,+12%
+39,Sparkling Water 6pk,Beverages,160,300,4.50,+25%
+40,Energy Drink 250ml,Beverages,190,450,2.50,+15%
+41,Green Tea Bags 50s,Beverages,55,180,4.99,+8%
+42,Roasted Peanuts,Snacks,80,250,3.50,-4%
+43,Tortilla Chips,Snacks,130,350,3.99,+20%
+44,Salsa Dip 300g,Pantry,65,150,3.50,+18%
+45,Multi-Surface Cleaner,Household,35,120,4.99,-2%
+46,Toilet Paper 12pk,Household,180,400,8.99,Stable
+47,Paper Towels 2pk,Household,110,250,4.50,Stable
+48,Trash Bags 50s,Household,60,180,5.99,Stable
+49,Air Freshener Spray,Household,45,140,3.50,+5%
+50,Dishwasher Tablets 30s,Household,30,90,11.99,-10%
+51,AA Batteries 4pk,Electronics,120,400,5.99,+5%
+52,LED Light Bulb 9W,Hardware,60,300,3.50,+12%
+53,Extension Cord 2m,Hardware,25,80,8.50,-4%
+54,Super Glue 2pk,Hardware,40,200,2.99,Stable
+55,Duct Tape Silver,Hardware,55,150,4.50,+2%
+56,Cat Food Dry 2kg,Pet Supplies,85,200,12.50,+8%
+57,Dog Food Canned 400g,Pet Supplies,110,350,2.20,+15%
+58,Cat Litter 5kg,Pet Supplies,65,140,8.99,+5%
+59,Dog Chew Toy,Pet Supplies,30,100,6.50,-2%
+60,Pet Flea Shampoo,Pet Supplies,15,50,9.99,-10%
+61,Avocado Hass,Produce,250,400,1.50,+35%
+62,Bananas 1kg,Produce,400,600,2.20,+10%
+63,Apples Gala 1kg,Produce,300,500,3.50,Stable
+64,Organic Carrots 1kg,Produce,150,300,2.80,+12%
+65,Fresh Spinach Bunch,Produce,90,150,1.99,-5%
+66,White Potatoes 2kg,Produce,200,450,3.99,+8%
+67,Red Onions 1kg,Produce,180,400,2.50,Stable
+68,Garlic Bulbs 3pk,Produce,120,350,1.80,+4%
+69,Fresh Tomatoes 1kg,Produce,280,400,3.99,+20%
+70,Cucumber,Produce,160,300,0.99,+15%
+71,Chicken Breast 500g,Meat & Poultry,140,250,7.99,+25%
+72,Ground Beef 500g,Meat & Poultry,180,300,8.50,+12%
+73,Pork Chops 400g,Meat & Poultry,90,150,6.99,-8%
+74,Fresh Salmon Fllet 300g,Seafood,60,100,12.99,+5%
+75,Frozen Shrimp 500g,Seafood,45,120,15.50,+2%
+76,Frozen Sweet Corn,Frozen,110,350,2.99,Stable
+77,Frozen Mixed Berries,Frozen,85,200,4.99,+18%
+78,Frozen Pizza Margherita,Frozen,150,400,5.50,+22%
+79,Vanilla Ice Cream 1L,Frozen,220,500,4.99,+40%
+80,Frozen Beef Burgers 4pk,Frozen,90,250,7.50,+10%
+81,Skim Milk 1L,Dairy,110,300,3.50,-5%
+82,Soy Milk 1L,Dairy Alternatives,85,200,4.50,+15%
+83,Almond Milk 1L,Dairy Alternatives,140,350,4.99,+28%
+84,Oat Milk 1L,Dairy Alternatives,160,400,5.20,+35%
+85,Vegan Cheese Slices,Dairy Alternatives,40,100,6.50,+12%
+86,Multigrain Bread,Bakery,130,180,3.50,+8%
+87,Croissants 4pk,Bakery,95,120,4.50,-4%
+88,Chocolate Muffins 2pk,Bakery,110,150,3.00,+15%
+89,Bagels 6pk,Bakery,140,250,3.99,+10%
+90,Hot Dog Buns 8pk,Bakery,80,200,2.50,-15%
+91,Bottled Water 1.5L,Beverages,350,800,0.99,+45%
+92,Sports Drink Isotonic,Beverages,180,400,2.20,+30%
+93,Kombucha Raspberry,Beverages,60,150,3.99,+22%
+94,Apple Juice 1L,Beverages,120,250,3.50,Stable
+95,Iced Tea Lemon 1.5L,Beverages,150,300,2.99,+18%
+96,Potato Chips Salt & Vinegar,Snacks,145,350,2.50,+8%
+97,Popcorn Microwave 3pk,Snacks,90,200,3.99,+12%
+98,Dark Chocolate 70%,Candy,85,250,3.50,+5%
+99,Chewing Gum Peppermint,Candy,210,600,1.20,Stable
+100,Cotton Swabs 200s,Personal Care,80,300,2.50,-2%

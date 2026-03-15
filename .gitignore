@@ -24,3 +24,4 @@ instance/
 # Data
 *.csv
 !static/data/dummy_template.csv
+!static/data/retail_dataset_100.csv
