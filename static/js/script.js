@@ -78,6 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (document.getElementById('heatmapGrid')) renderHeatmap();
         if (document.getElementById('smartInsightsList')) renderSmartInsights();
         if (document.getElementById('analyzerSearchInput')) initProductAnalyzer();
+        if (document.getElementById('forecastProductList')) initializeForecastingSelector();
         if (document.getElementById('mainForecastChart')) initForecasting();
         if (document.getElementById('trendsContainer')) renderTrendingProducts();
         if (document.getElementById('promoForm')) initSimulators();
@@ -802,14 +803,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Jump to overview to see updated stats
                 setTimeout(() => {
-                    document.querySelector('.nav-item[href="#overview"]').click();
                     // trigger flash animation on score to show it "updated"
                     const card = document.querySelector('.glass-card');
-                    gsap.from(card, { backgroundColor: 'rgba(74, 222, 128, 0.2)', duration: 1 });
+                    if (card) gsap.from(card, { backgroundColor: 'rgba(74, 222, 128, 0.2)', duration: 1 });
                 }, 2000);
             }, 1500);
         }
-    }
 
     /* --- FEATURE 8: REPORT MOCK --- */
     function initReportModal() {
@@ -1321,6 +1320,91 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             return `Based on your <b>${dataset.length || 20}-item</b> dataset, overall store health is stable. 💡 Try asking: <i>"Top sellers"</i>, <i>"Any stockout risks?"</i>, or search a product like <i>"Milk"</i> or <i>"Coffee"</i>.`;
+        }
+    }
+
+    /* --- V5.2 Visual Product Selector --- */
+    window.initializeForecastingSelector = function() {
+        const listContainer = document.getElementById('forecastProductList');
+        const items = window.retailDataset || [];
+
+        if (listContainer && items.length > 0) {
+            listContainer.innerHTML = '';
+
+            items.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = "min-w-[150px] flex-shrink-0 bg-darkBg border border-darkBorder hover:border-brand/40 rounded-xl p-3 cursor-pointer transition-colors flex flex-col items-center text-center group product-card-btn";
+                card.dataset.id = item.id || index;
+
+                // Product-specific image map
+                const productImageMap = {
+                    'milk': 'https://images.unsplash.com/photo-1550583724-b2692b85b150?w=200&q=80',
+                    'bread': 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=200&q=80',
+                    'coffee': 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=200&q=80',
+                    'apple': 'https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=200&q=80',
+                    'laundry': 'https://images.unsplash.com/photo-1583947581924-860bda6a26df?w=200&q=80',
+                    'headphone': 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200&q=80',
+                    'tv': 'https://images.unsplash.com/photo-1593359677759-54c0c077c0ec?w=200&q=80',
+                    't-shirt': 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=200&q=80',
+                    'shoes': 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200&q=80',
+                    'banana': 'https://images.unsplash.com/photo-1543218024-57a70143c369?w=200&q=80',
+                    'avocado': 'https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=200&q=80',
+                    'yogurt': 'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=200&q=80',
+                    'cheese': 'https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?w=200&q=80',
+                    'pasta': 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=200&q=80',
+                    'olive oil': 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=200&q=80',
+                    'dish soap': 'https://images.unsplash.com/photo-1583947581924-860bda6a26df?w=200&q=80',
+                    'paper towels': 'https://images.unsplash.com/photo-1584556326561-43ed3f4a7f3d?w=200&q=80',
+                    'sparkling water': 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=200&q=80',
+                    'orange juice': 'https://images.unsplash.com/photo-1621506289937-4f14df5a053c?w=200&q=80',
+                    'mouse pad': 'https://images.unsplash.com/photo-1616627547584-bf28cee262db?w=200&q=80'
+                };
+
+                const categoryImageMap = {
+                    'Dairy': 'https://images.unsplash.com/photo-1563636619-e9143da7f884?w=200&q=80',
+                    'Bakery': 'https://images.unsplash.com/photo-1549931319-a545dcf3bc7f?w=200&q=80',
+                    'Beverages': 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=200&q=80',
+                    'Pantry': 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=200&q=80',
+                    'Snacks': 'https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=200&q=80',
+                    'Electronics': 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=200&q=80',
+                    'Produce': 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=200&q=80',
+                    'Household': 'https://images.unsplash.com/photo-1583947581924-860bda6a26df?w=200&q=80',
+                    'Apparel': 'https://images.unsplash.com/photo-1523381235312-d07a78bc1344?w=200&q=80'
+                };
+
+                const nameLower = item.product_name.toLowerCase();
+                let imgUrl = null;
+                for (const [keyword, url] of Object.entries(productImageMap)) {
+                    if (nameLower.includes(keyword)) { imgUrl = url; break; }
+                }
+                if (!imgUrl) imgUrl = categoryImageMap[item.category] || 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=200&q=80';
+
+                card.innerHTML = `
+                    <div class="w-12 h-12 rounded-full overflow-hidden bg-darkCard border border-darkBorder text-slate-500 mb-2 group-hover:scale-110 transition-transform flex items-center justify-center">
+                        <img src="${imgUrl}" alt="${item.product_name}" class="w-full h-full object-cover"
+                             onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\\'text-lg font-bold text-brand-light\\'>' + '${item.product_name[0]}' + '</span>';">
+                    </div>
+                    <p class="text-[11px] font-bold text-white w-full truncate" title="${item.product_name}">${item.product_name}</p>
+                    <p class="text-[10px] text-brand w-full truncate">${item.category}</p>
+                `;
+
+                card.addEventListener('click', () => {
+                    const analyzerInput = document.getElementById('analyzerSearchInput');
+                    if (analyzerInput) {
+                        analyzerInput.value = item.product_name;
+                        analyzerInput.dataset.selectedId = card.dataset.id;
+                    }
+                    document.querySelectorAll('.product-card-btn').forEach(c => {
+                        c.classList.remove('border-brand', 'bg-brand/10');
+                        c.classList.add('border-darkBorder', 'bg-darkBg');
+                    });
+                    card.classList.remove('border-darkBorder', 'bg-darkBg');
+                    card.classList.add('border-brand', 'bg-brand/10');
+                    if (window.renderDemandChart) window.renderDemandChart('both', card.dataset.id);
+                });
+
+                listContainer.appendChild(card);
+            });
         }
     }
 });

@@ -62,6 +62,7 @@ const translations = {
         "analyzer_insight_title": "AI Demand Insight",
         "chart_horizon_7d": "7 Days",
         "chart_horizon_30d": "30 Days",
+        "quick_analyze_products": "Quick Analyze Products",
         "promo_analyzer_title": "Promo Impact Analyzer",
         "promo_analyzer_desc": "Simulate discount campaigns",
         "discount_percentage": "Discount Percentage",
@@ -152,6 +153,7 @@ const translations = {
         "voice_redirect_risk": "महत्वपूर्ण स्टॉक अलर्ट प्राप्त किए जा रहे हैं। 7 वस्तुओं पर तत्काल ध्यान देने की आवश्यकता है।",
         "voice_greeting_simple": "मैं सक्रिय हूं और सुन रहा हूं। मैं आज आपके रिटेल डेटा में आपकी कैसे सहायता कर सकता हूं?",
         "voice_fallback": "मैंने सुना: '%CMD%'। मैं पूर्वानुमान, रुझान या स्टॉक अलर्ट में मदद कर सकता हूं।",
+        "quick_analyze_products": "त्वरित उत्पाद विश्लेषण",
         "voice_not_supported": "(इस ब्राउज़र में आवाज़ समर्थित नहीं है)"
     },
     te: {
@@ -197,6 +199,7 @@ const translations = {
         "analyzer_insight_title": "AI డిమాండ్ అంతర్దృష్టి",
         "chart_horizon_7d": "7 రోజులు",
         "chart_horizon_30d": "30 రోజులు",
+        "quick_analyze_products": "త్వరిత ఉత్పత్తి విశ్లేషణ",
         "promo_analyzer_title": "ప్రోమో ఇంపాక్ట్ ఎనలైజర్",
         "promo_analyzer_desc": "డిస్కౌంట్ ప్రచారాలను అనుకరించండి",
         "discount_percentage": "డిస్కౌంట్ శాతం",
