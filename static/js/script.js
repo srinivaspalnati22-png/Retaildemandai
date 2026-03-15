@@ -696,82 +696,176 @@ document.addEventListener('DOMContentLoaded', () => {
         const text = document.getElementById('aiVoiceText');
         const ripples = document.getElementById('aiVoiceRipples');
         const avatarContainer = document.getElementById('aiAvatarContainer');
-        if (!btn || !('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) { if (btn) btn.style.display = 'none'; return; }
+        if (!btn) return;
+
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            console.warn('Speech Recognition not supported');
+            return;
+        }
+
         const recognition = new SpeechRecognition();
-        recognition.continuous = true; recognition.interimResults = false;
+        recognition.continuous = true;
+        recognition.interimResults = true;
         recognition.lang = getVoiceLocale();
-        let isListening = false, isProcessing = false;
+
+        let isListening = false;
+        let isProcessing = false;
+
         function getVoiceLocale() {
             const lang = localStorage.getItem('retail_lang') || 'en';
             const m = { en:'en-US', hi:'hi-IN', te:'te-IN', ta:'ta-IN', kn:'kn-IN', ml:'ml-IN', bn:'bn-IN', mr:'mr-IN', es:'es-ES', fr:'fr-FR' };
             return m[lang] || 'en-US';
         }
-        function setAvatarState(state) { if (!avatarContainer) return; avatarContainer.classList.remove('avatar-listening','avatar-talking'); if (state==='listening') avatarContainer.classList.add('avatar-listening'); if (state==='talking') avatarContainer.classList.add('avatar-talking'); }
+
+        function setAvatarState(state) {
+            if (!avatarContainer) return;
+            avatarContainer.classList.remove('avatar-listening','avatar-talking');
+            if (state==='listening') avatarContainer.classList.add('avatar-listening');
+            if (state==='talking') avatarContainer.classList.add('avatar-talking');
+        }
+
         function findVoiceForLocale(locale) {
-            const voices = window.speechSynthesis.getVoices(); if (!voices.length) return null;
-            let voice = voices.find(v => v.lang === locale); if (voice) return voice;
+            const voices = window.speechSynthesis.getVoices();
+            if (!voices.length) return null;
+            let voice = voices.find(v => v.lang === locale);
+            if (voice) return voice;
             const shortLang = locale.split('-')[0];
-            voice = voices.find(v => v.lang.startsWith(shortLang)); if (voice) return voice;
-            const langNames = { 'en':['english'], 'hi':['hindi'], 'te':['telugu'], 'ta':['tamil'], 'kn':['kannada'], 'ml':['malayalam'], 'bn':['bengali'], 'mr':['marathi'] };
-            const searchNames = langNames[shortLang];
-            if (searchNames) { voice = voices.find(v => searchNames.some(n => v.name.toLowerCase().includes(n))); }
+            voice = voices.find(v => v.lang.startsWith(shortLang));
             return voice || null;
         }
+
         function speak(message) {
             if (!window.speechSynthesis) return;
-            const locale = getVoiceLocale(); window.speechSynthesis.cancel();
+            const locale = getVoiceLocale();
+            window.speechSynthesis.cancel();
             setTimeout(() => {
                 const utterance = new SpeechSynthesisUtterance(message);
-                utterance.lang = locale; utterance.rate = 1.0; utterance.pitch = 1.0;
+                utterance.lang = locale;
                 const matchedVoice = findVoiceForLocale(locale);
                 if (matchedVoice) utterance.voice = matchedVoice;
-                utterance.onstart = () => { setAvatarState('talking'); if (bubble) { bubble.classList.remove('hidden','scale-0','opacity-0'); bubble.classList.add('show'); } if (text) text.innerHTML = '<span class="text-white">' + message + '</span>'; };
-                utterance.onend = () => { setAvatarState('idle'); if (isListening && !isProcessing) { setAvatarState('listening'); const langNow = localStorage.getItem('retail_lang') || 'en'; const listeningText = (translations[langNow] && translations[langNow].assistant_listening) || 'Listening...'; if (text) text.innerHTML = '<span class="text-brand-light animate-pulse">' + listeningText + '</span>'; } };
+                utterance.onstart = () => {
+                    setAvatarState('talking');
+                    if (bubble) { bubble.classList.remove('hidden','scale-0','opacity-0'); bubble.classList.add('show'); }
+                    if (text) text.innerHTML = '<span class="text-white">' + message + '</span>';
+                };
+                utterance.onend = () => {
+                    setAvatarState('idle');
+                    if (isListening && !isProcessing) {
+                        setAvatarState('listening');
+                        const langNow = localStorage.getItem('retail_lang') || 'en';
+                        const listeningText = (translations[langNow] && translations[langNow].assistant_listening) || 'Listening...';
+                        if (text) text.innerHTML = '<span class="text-brand-light animate-pulse">' + listeningText + '</span>';
+                    }
+                };
                 window.speechSynthesis.speak(utterance);
             }, 100);
         }
-        if (window.speechSynthesis) { window.speechSynthesis.getVoices(); window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); }; }
-        btn.addEventListener('click', () => { if (isListening) stopRecognition(); else startRecognition(); });
+
+        btn.addEventListener('click', () => {
+            if (isListening) stopRecognition();
+            else startRecognition();
+        });
+
         function startRecognition() {
-            try { recognition.lang = getVoiceLocale(); recognition.start(); isListening = true;
+            try {
+                recognition.lang = getVoiceLocale();
+                recognition.start();
+                isListening = true;
                 const lang = localStorage.getItem('retail_lang') || 'en';
-                const greet = (translations[lang] && translations[lang].assistant_greeting) || (translations['en'] && translations['en'].assistant_greeting) || 'Hello!';
+                const greet = (translations[lang] && translations[lang].assistant_greeting) || 'Hello!';
                 speak(greet);
-                if (ripples) ripples.classList.remove('hidden','scale-0','opacity-0');
-                if (bubble) { bubble.classList.remove('hidden','scale-0','opacity-0'); bubble.classList.add('show'); }
-                btn.classList.add('scale-110'); btn.querySelector('i').classList.replace('fa-microphone','fa-microphone-lines');
-            } catch(e) { isListening = false; }
+                if (ripples) ripples.classList.remove('hidden');
+                btn.classList.add('scale-110');
+                const icon = btn.querySelector('i');
+                if (icon) icon.classList.replace('fa-microphone','fa-microphone-lines');
+            } catch(e) {
+                console.error('Recognition error:', e);
+                isListening = false;
+            }
         }
+
         function stopRecognition() {
-            isListening = false; recognition.stop();
-            if (ripples) ripples.classList.add('hidden'); btn.classList.remove('scale-110');
-            btn.querySelector('i').classList.replace('fa-microphone-lines','fa-microphone');
-            setAvatarState('idle'); if (bubble) bubble.classList.remove('show'); window.speechSynthesis.cancel();
+            isListening = false;
+            recognition.stop();
+            if (ripples) ripples.classList.add('hidden');
+            btn.classList.remove('scale-110');
+            const icon = btn.querySelector('i');
+            if (icon) icon.classList.replace('fa-microphone-lines','fa-microphone');
+            setAvatarState('idle');
+            if (bubble) bubble.classList.remove('show');
+            window.speechSynthesis.cancel();
         }
-        recognition.onresult = function(event) { const transcript = event.results[event.results.length-1][0].transcript.trim().toLowerCase(); processCommand(transcript); };
-        function matchesKeywords(cmd, keywords) { if (!keywords) return false; return keywords.some(kw => cmd.includes(kw.toLowerCase())); }
+
+        recognition.onstart = () => { console.log('Speech Recognition Started'); };
+        recognition.onerror = (event) => {
+            console.error('Speech Recognition Error:', event.error);
+            if (event.error === 'not-allowed') {
+                alert('Microphone access denied. Please enable it in browser settings.');
+                stopRecognition();
+            }
+        };
+        recognition.onend = () => {
+            console.log('Speech Recognition Ended');
+            if (isListening) {
+                try { recognition.start(); } catch(e) {}
+            }
+        };
+
+        recognition.onresult = (event) => {
+            let finalTranscript = '';
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                if (event.results[i].isFinal) {
+                    finalTranscript += event.results[i][0].transcript;
+                }
+            }
+            if (finalTranscript) {
+                console.log('Final Transcript:', finalTranscript);
+                processCommand(finalTranscript.trim().toLowerCase());
+            }
+        };
+
+        function matchesKeywords(cmd, keywords) {
+            if (!keywords) return false;
+            return keywords.some(kw => cmd.includes(kw.toLowerCase()));
+        }
+
         function processCommand(cmd) {
             isProcessing = true;
             if (text) text.innerHTML = '<i class="text-slate-400">"' + cmd + '"</i><br><span class="text-brand text-[10px] uppercase font-bold animate-pulse">Analyzing...</span>';
-            let response = '', action = null;
             const lang = localStorage.getItem('retail_lang') || 'en';
             const t = translations[lang] || translations['en'];
             const vc = typeof voiceCommands !== 'undefined' ? voiceCommands : null;
-            const forecastKw = (vc && vc.forecast && vc.forecast[lang]) || (vc && vc.forecast && vc.forecast.en) || [];
-            const trendsKw = (vc && vc.trends && vc.trends[lang]) || (vc && vc.trends && vc.trends.en) || [];
-            const riskKw = (vc && vc.risk && vc.risk[lang]) || (vc && vc.risk && vc.risk.en) || [];
-            const greetingKw = (vc && vc.greeting && vc.greeting[lang]) || (vc && vc.greeting && vc.greeting.en) || [];
-            if (matchesKeywords(cmd, forecastKw)) { response = t.voice_redirect_forecast || 'Redirecting to Forecasting'; action = () => window.location.href = '/forecasting'; }
-            else if (matchesKeywords(cmd, trendsKw)) { response = t.voice_redirect_trends || 'Opening Trends'; action = () => window.location.href = '/trends'; }
-            else if (matchesKeywords(cmd, riskKw)) { response = t.voice_redirect_risk || 'Opening Risk Intelligence'; action = () => window.location.href = '/risk_intelligence'; }
-            else if (matchesKeywords(cmd, greetingKw)) { response = t.voice_greeting_simple || 'Hello, how can I help?'; }
-            else { response = (t.voice_fallback || 'I heard: %CMD%').replace('%CMD%', cmd); }
+            
+            let response = '';
+            let action = null;
+
+            const forecastKw = (vc && vc.forecast && vc.forecast[lang]) || [];
+            const trendsKw = (vc && vc.trends && vc.trends[lang]) || [];
+            const riskKw = (vc && vc.risk && vc.risk[lang]) || [];
+            const greetingKw = (vc && vc.greeting && vc.greeting[lang]) || [];
+
+            if (matchesKeywords(cmd, forecastKw)) {
+                response = t.voice_redirect_forecast || 'Redirecting';
+                action = () => window.location.href = '/forecasting';
+            } else if (matchesKeywords(cmd, trendsKw)) {
+                response = t.voice_redirect_trends || 'Opening Trends';
+                action = () => window.location.href = '/trends';
+            } else if (matchesKeywords(cmd, riskKw)) {
+                response = t.voice_redirect_risk || 'Opening Risk Intelligence';
+                action = () => window.location.href = '/risk_intelligence';
+            } else if (matchesKeywords(cmd, greetingKw)) {
+                response = t.voice_greeting_simple || 'Hello!';
+            } else {
+                response = (t.voice_fallback || "I heard: %CMD%").replace('%CMD%', cmd);
+            }
+
             speak(response);
-            if (action) setTimeout(action, 4000);
+            if (action) setTimeout(action, 3000);
             setTimeout(() => { isProcessing = false; }, 1000);
         }
     }
+
     window.toggleCopilot = function() { const sidebar = document.getElementById('copilotSidebar'); if (sidebar) sidebar.classList.toggle('translate-x-full'); };
     function initCopilot() {
         const form = document.getElementById('copilotForm');
