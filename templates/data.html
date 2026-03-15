@@ -1,0 +1,73 @@
+{% extends "layout.html" %}
+
+{% block page_title %}Data Management{% endblock %}
+
+{% block content %}
+<div id="data" class="section-block active space-y-8">
+    <div class="glass-panel p-8 rounded-2xl border border-darkBorder text-center">
+        <h2 class="font-heading font-bold text-2xl text-white mb-2" data-i18n="upload_dataset_title">Upload Sales Dataset</h2>
+        <p class="text-sm text-slate-400 mb-8 max-w-lg mx-auto" data-i18n="upload_dataset_desc">Upload a <code>sales_data.csv</code> file to instantly
+            retrain local mock machine learning models and populate the dashboard with custom insights.</p>
+
+        <div id="dropZone"
+            class="max-w-xl mx-auto border-2 border-dashed border-darkBorder hover:border-brand bg-darkBg hover:bg-slate-800/30 transition-all rounded-2xl p-10 cursor-pointer flex flex-col items-center justify-center group relative overflow-hidden">
+            <div
+                class="absolute inset-0 bg-brand/5 scale-0 group-hover:scale-100 transition-transform duration-500 rounded-2xl origin-center">
+            </div>
+
+            <input type="file" id="csvFileInput" accept=".csv" class="hidden">
+            <div
+                class="w-16 h-16 rounded-full bg-brand/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform relative z-10">
+                <i class="fas fa-cloud-upload-alt text-2xl text-brand-light"></i>
+            </div>
+            <h4 class="font-bold text-white mb-1 relative z-10" data-i18n="drag_drop_csv">Drag & Drop CSV file</h4>
+            <p class="text-xs text-slate-500 relative z-10" data-i18n="click_browse">or click to browse from local computer</p>
+        </div>
+
+        <div id="uploadStatus" class="mt-6 hidden">
+            <div class="flex items-center justify-center gap-2 text-green-400 font-medium">
+                <i class="fas fa-check-circle"></i> <span data-i18n="upload_success">Data parsed successfully! Updating models...</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+        <div class="glass-card p-6 rounded-2xl border border-darkBorder">
+            <h3 class="font-bold text-white mb-3"><i class="fas fa-plug text-slate-400 mr-2"></i> <span data-i18n="api_integrations">API Integrations</span></h3>
+            <p class="text-sm text-slate-400 mb-4" data-i18n="api_desc">Connect RetailMind AI directly to your existing systems.</p>
+            <div class="space-y-3">
+                <div class="flex items-center justify-between p-3 rounded-lg border border-slate-700/50 bg-darkBg">
+                    <div class="flex items-center gap-3"><i class="fab fa-shopify text-green-500 text-xl"></i> <span
+                            class="text-sm font-bold">Shopify POS</span></div>
+                    <button class="text-xs font-bold bg-brand/20 text-brand-light px-3 py-1 rounded" data-i18n="btn_connect">Connect</button>
+                </div>
+                <div class="flex items-center justify-between p-3 rounded-lg border border-slate-700/50 bg-darkBg">
+                    <div class="flex items-center gap-3"><i class="fab fa-salesforce text-blue-500 text-xl"></i> <span
+                            class="text-sm font-bold">Salesforce</span></div>
+                    <button class="text-xs font-bold bg-brand/20 text-brand-light px-3 py-1 rounded">Connect</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-card p-6 rounded-2xl border border-darkBorder">
+            <h3 class="font-bold text-white mb-3"><i class="fas fa-history text-slate-400 mr-2"></i> <span data-i18n="model_status">Model Status</span></h3>
+            <ul class="space-y-4">
+                <li class="flex justify-between items-center text-sm border-b border-darkBorder pb-2">
+                    <span class="text-slate-400" data-i18n="last_trained">Last Trained</span>
+                    <span class="text-white font-mono">Today, 08:42 AM</span>
+                </li>
+                <li class="flex justify-between items-center text-sm border-b border-darkBorder pb-2">
+                    <span class="text-slate-400" data-i18n="total_rows">Total Rows Digested</span>
+                    <span class="text-white font-mono">1.42 Million</span>
+                </li>
+                <li class="flex justify-between items-center text-sm">
+                    <span class="text-slate-400" data-i18n="network_active">Network Active</span>
+                    <span class="text-green-400 font-bold flex items-center gap-2">
+                        <div class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div> <span data-i18n="online">Online</span>
+                    </span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

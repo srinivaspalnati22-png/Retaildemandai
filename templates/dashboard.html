@@ -1,0 +1,236 @@
+{% extends "layout.html" %}
+
+{% block page_title %}<span data-i18n="page_store_overview">Store Overview</span>{% endblock %}
+
+{% block header_actions %}
+<button id="generateReportBtn"
+    class="hidden sm:flex items-center gap-2 btn-gradient px-4 py-2 rounded-lg text-white text-sm font-medium shadow-[0_0_15px_rgba(99,102,241,0.4)] hover:shadow-[0_0_25px_rgba(99,102,241,0.6)] transition-all">
+    <i class="fas fa-file-export"></i> <span data-i18n="btn_report">Generate Insights Report</span>
+</button>
+{% endblock %}
+
+{% block content %}
+<div id="overview" class="section-block active space-y-8">
+
+    <!-- Top KPI Row -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+        <!-- Business Health Score -->
+        <div class="glass-card kpi-health rounded-2xl p-6 group animate-in delay-1">
+            <h3 class="text-xs font-bold text-slate-400 mb-4 flex items-center justify-between">
+                <span class="flex items-center gap-2 uppercase tracking-widest"><i class="fas fa-heartbeat text-green-400"></i> <span data-i18n="kpi_store_health">Store Health</span></span>
+                <i class="fas fa-ellipsis-v text-slate-600"></i>
+            </h3>
+            <div class="flex items-center justify-between">
+                <div>
+                    <span id="healthScoreCounter" class="text-4xl font-heading font-extrabold text-white tracking-tight">0</span>
+                    <span class="text-slate-500 text-sm font-medium">/100</span>
+                </div>
+                <!-- Animated Circular Progress -->
+                <div class="relative w-14 h-14">
+                    <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                        <path class="text-slate-800/50" stroke-width="4" stroke="currentColor" fill="none"
+                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <path id="healthCircle" class="text-green-500 transition-all duration-1500 ease-out"
+                            stroke-dasharray="0, 100" stroke-width="4" stroke-linecap="round" stroke="currentColor"
+                            fill="none"
+                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    </svg>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center gap-2">
+                <span class="px-1.5 py-0.5 rounded bg-green-500/20 text-green-400 text-[10px] font-bold"><i class="fas fa-caret-up"></i> +4.2%</span>
+                <span class="text-[10px] text-slate-500 font-medium" data-i18n="kpi_growth_label">vs last month</span>
+            </div>
+        </div>
+
+        <div class="glass-card kpi-products rounded-2xl p-6 group animate-in delay-2">
+            <h3 class="text-xs font-bold text-slate-400 mb-4 flex items-center justify-between">
+                <span class="flex items-center gap-2 uppercase tracking-widest"><i class="fas fa-boxes text-brand-light"></i> <span data-i18n="kpi_total_products">Active Skus</span></span>
+                <i class="fas fa-ellipsis-v text-slate-600"></i>
+            </h3>
+            <div class="flex flex-col">
+                <span class="text-4xl font-heading font-extrabold text-white tracking-tight"><span class="counter"
+                        data-target="524">0</span></span>
+                <span class="text-brand-light/70 text-[10px] font-bold mt-1 uppercase tracking-wider" data-i18n="kpi_dataset_label">V5.2 Neural Dataset</span>
+            </div>
+            <div class="mt-4 flex items-center gap-2">
+                <div class="flex -space-x-2">
+                    <div class="w-5 h-5 rounded-full border border-darkBg bg-slate-700 flex items-center justify-center text-[8px]">A</div>
+                    <div class="w-5 h-5 rounded-full border border-darkBg bg-slate-600 flex items-center justify-center text-[8px]">B</div>
+                </div>
+                <span class="text-[10px] text-slate-500 font-medium" data-i18n="kpi_added_today">+12 Added today</span>
+            </div>
+        </div>
+
+        <div class="glass-card kpi-demand rounded-2xl p-6 group animate-in delay-3">
+             <h3 class="text-xs font-bold text-slate-400 mb-4 flex items-center justify-between">
+                <span class="flex items-center gap-2 uppercase tracking-widest"><i class="fas fa-chart-line text-orange-400"></i> <span data-i18n="kpi_demand_growth">Volume Growth</span></span>
+                <i class="fas fa-ellipsis-v text-slate-600"></i>
+            </h3>
+            <div class="flex flex-col">
+                <span class="text-4xl font-heading font-extrabold text-white tracking-tight"><span class="counter"
+                        data-target="24">0</span>%</span>
+                <span class="text-orange-400/80 text-[10px] font-bold mt-1 uppercase tracking-wider whitespace-nowrap overflow-hidden text-ellipsis"><i
+                        class="fas fa-bolt mr-1"></i> <span data-i18n="kpi_surge_label">Energy Drinks Surge</span></span>
+            </div>
+            <div class="mt-4 flex gap-1 items-end h-4">
+                <div class="w-1.5 h-1/2 bg-orange-500/30 rounded-t-sm"></div>
+                <div class="w-1.5 h-3/4 bg-orange-500/50 rounded-t-sm"></div>
+                <div class="w-1.5 h-full bg-orange-500 rounded-t-sm animate-pulse"></div>
+            </div>
+        </div>
+
+        <div class="glass-card kpi-risk rounded-2xl p-6 group animate-in delay-4 cursor-pointer"
+            onclick="window.location.href='/risk_intelligence'">
+            <h3 class="text-xs font-bold text-slate-400 mb-4 flex items-center justify-between">
+                <span class="flex items-center gap-2 uppercase tracking-widest"><i class="fas fa-skull-crossbones text-red-500"></i> <span data-i18n="kpi_high_risk">Critical Risk</span></span>
+                <i class="fas fa-arrow-right text-red-500/40 group-hover:text-red-500 transition-colors"></i>
+            </h3>
+            <div class="flex flex-col">
+                <span class="text-4xl font-heading font-extrabold text-white tracking-tight"><span class="counter"
+                        data-target="7">0</span></span>
+                <span class="text-red-400/80 text-[10px] font-bold mt-1 uppercase tracking-wider block overflow-hidden text-ellipsis whitespace-nowrap" data-i18n="kpi_stockout_label">Stockouts Detected</span>
+            </div>
+            <div class="mt-4 flex items-center gap-2">
+                 <div class="flex-1 h-1 bg-slate-800 rounded-full overflow-hidden">
+                    <div class="w-[70%] h-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]"></div>
+                 </div>
+                 <span class="text-[9px] text-red-400 font-bold" data-i18n="kpi_severity_high">Severity: High</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Weekly Performance Summary Row -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="glass-card rounded-xl p-4 border border-darkBorder flex items-center gap-3 animate-in delay-1">
+            <div class="w-10 h-10 rounded-lg bg-brand/15 flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-fire text-brand-light text-sm"></i>
+            </div>
+            <div>
+                <p class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Top Category</p>
+                <p class="text-sm font-bold text-white">Beverages</p>
+                <p class="text-[9px] text-green-400 font-semibold">&#8593; 32% this week</p>
+            </div>
+        </div>
+        <div class="glass-card rounded-xl p-4 border border-darkBorder flex items-center gap-3 animate-in delay-2">
+            <div class="w-10 h-10 rounded-lg bg-orange-500/15 flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-clock text-orange-400 text-sm"></i>
+            </div>
+            <div>
+                <p class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Avg Restock</p>
+                <p class="text-sm font-bold text-white">2.4 Days</p>
+                <p class="text-[9px] text-orange-400 font-semibold">&#8595; 0.6 vs target</p>
+            </div>
+        </div>
+        <div class="glass-card rounded-xl p-4 border border-darkBorder flex items-center gap-3 animate-in delay-3">
+            <div class="w-10 h-10 rounded-lg bg-green-500/15 flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-dollar-sign text-green-400 text-sm"></i>
+            </div>
+            <div>
+                <p class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Weekly Revenue</p>
+                <p class="text-sm font-bold text-white">$48,200</p>
+                <p class="text-[9px] text-green-400 font-semibold">&#8593; +12% vs last week</p>
+            </div>
+        </div>
+        <div class="glass-card rounded-xl p-4 border border-darkBorder flex items-center gap-3 animate-in delay-4">
+            <div class="w-10 h-10 rounded-lg bg-cyan-500/15 flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-boxes text-cyan-400 text-sm"></i>
+            </div>
+            <div>
+                <p class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Restocked SKUs</p>
+                <p class="text-sm font-bold text-white">34 SKUs</p>
+                <p class="text-[9px] text-cyan-400 font-semibold">&#8593; 8 more than avg</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Grid: Heatmap & Insights -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- Feature 7: Sales Heatmap -->
+        <div class="lg:col-span-2 glass-panel rounded-2xl p-6 border border-darkBorder flex flex-col">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
+                <h3 class="font-heading font-bold text-lg text-white flex items-center gap-2">
+                    <i class="fas fa-th text-brand"></i> <span data-i18n="heatmap_title">Demand Heatmap Grid</span>
+                </h3>
+                <div class="flex gap-2">
+                    <select id="seasonSelector" onchange="window.setHeatmapSeason(this.value)"
+                        class="bg-darkBg border border-darkBorder text-white text-sm rounded-lg focus:ring-brand focus:border-brand block w-full px-3 py-1.5 outline-none cursor-pointer transition-colors shadow-sm">
+                        <option value="Summer" data-i18n="heatmap_season_summer">Summer</option>
+                        <option value="Winter" data-i18n="heatmap_season_winter">Winter</option>
+                        <option value="Monsoon" data-i18n="heatmap_season_monsoon">Monsoon</option>
+                        <option value="Festival" data-i18n="heatmap_season_festival">Festival</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 text-[10px] font-medium mb-4">
+                <span class="flex items-center gap-1"><span
+                        class="w-2.5 h-2.5 rounded-full bg-red-500 drop-shadow-[0_0_5px_rgba(239,68,68,0.8)]"></span>
+                    <span data-i18n="heatmap_legend_high">High Demand</span></span>
+                <span class="flex items-center gap-1"><span
+                        class="w-2.5 h-2.5 rounded-full bg-yellow-500 drop-shadow-[0_0_5px_rgba(234,179,8,0.8)]"></span>
+                    <span data-i18n="heatmap_legend_medium">Medium</span></span>
+                <span class="flex items-center gap-1"><span
+                        class="w-2.5 h-2.5 rounded-full bg-blue-500 drop-shadow-[0_0_5px_rgba(59,130,246,0.8)]"></span>
+                    <span data-i18n="heatmap_legend_low">Low</span></span>
+            </div>
+
+            <!-- Heatmap Grid (Generated via JS) -->
+            <div id="heatmapGrid" class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 flex-1">
+                <!-- Cells injected via JS -->
+            </div>
+        </div>
+
+        <!-- Feature 6: Smart Business Insights -->
+        <div class="glass-panel rounded-2xl p-6 border border-darkBorder flex flex-col">
+            <div class="flex items-center justify-between mb-5">
+                <h3 class="font-heading font-bold text-lg text-white flex items-center gap-2">
+                    <i class="fas fa-lightbulb text-yellow-400"></i> <span data-i18n="insights_title">AI Recommendations</span>
+                </h3>
+                <span class="text-[9px] font-black px-2 py-1 rounded-full bg-brand/20 text-brand-light border border-brand/30">4 Active</span>
+            </div>
+            <div class="flex-1 space-y-3 overflow-y-auto custom-scrollbar pr-1" id="smartInsightsList">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block modals %}
+<!-- Feature 8: Retail Insights Report Modal -->
+<div id="reportModal"
+    class="fixed inset-0 z-[200] bg-black/80 backdrop-blur-sm hidden items-center justify-center opacity-0 transition-opacity duration-300">
+    <div class="bg-darkCard w-full max-w-4xl max-h-[90vh] rounded-2xl border border-darkBorder shadow-2xl flex flex-col transform scale-95 transition-transform duration-300"
+        id="reportModalContent">
+        <div
+            class="p-6 border-b border-darkBorder flex justify-between items-center bg-gradient-to-r from-brand/10 to-transparent rounded-t-2xl">
+            <div class="flex items-center gap-3">
+                <i class="fas fa-file-alt text-2xl text-brand"></i>
+                <div>
+                    <h2 class="font-heading font-bold text-xl text-white" data-i18n="report_modal_title">AI Executive Report</h2>
+                    <p class="text-xs text-slate-400"><span data-i18n="report_modal_generated">Generated:</span> <span id="reportDate">--</span></p>
+                </div>
+            </div>
+            <button id="closeReportBtn"
+                class="text-slate-400 hover:text-white transition-colors w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-800">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="p-8 overflow-y-auto custom-scrollbar flex-1 space-y-8" id="reportContentArea">
+            <!-- Javascript will inject the detailed report here -->
+            <div class="flex items-center justify-center h-32">
+                <div class="loader"></div>
+            </div>
+        </div>
+        <div class="p-4 border-t border-darkBorder flex justify-end gap-4 bg-darkBg rounded-b-2xl">
+            <button class="px-4 py-2 rounded-lg text-sm text-slate-400 hover:text-white" data-i18n="btn_copy_link">Copy Link</button>
+            <button class="btn-gradient px-4 py-2 rounded-lg text-white text-sm font-medium">
+                <i class="fas fa-download mr-2"></i> <span data-i18n="btn_download_pdf">Download PDF</span>
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}

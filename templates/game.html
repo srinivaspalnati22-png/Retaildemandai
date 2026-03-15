@@ -1,0 +1,209 @@
+{% extends "layout.html" %}
+
+{% block page_title %}Retail Manager: AI Simulation Games{% endblock %}
+
+{% block header_actions %}
+<button id="endTurnBtn"
+    class="flex items-center gap-2 btn-gradient px-4 py-2 rounded-lg text-white text-sm font-medium shadow-[0_0_15px_rgba(99,102,241,0.4)] hover:shadow-[0_0_25px_rgba(99,102,241,0.6)] transition-all">
+    <i class="fas fa-forward"></i> <span data-i18n="btn_end_turn">End Turn (Next Day)</span>
+</button>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+
+    <!-- Game Top Bar -->
+    <div
+        class="glass-panel p-4 rounded-xl border border-purple-500/30 flex items-center justify-between shadow-[0_0_30px_rgba(168,85,247,0.1)]">
+        <div class="flex items-center gap-6">
+            <div>
+                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider" data-i18n="game_day">Current Day</p>
+                <p class="text-2xl font-bold font-heading text-white" id="gameDay">1</p>
+            </div>
+            <div class="h-8 w-px bg-darkBorder"></div>
+            <div>
+                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider" data-i18n="game_funds">Store Funds</p>
+                <p class="text-2xl font-bold font-heading text-green-400">$<span id="gameFunds" class="counter"
+                        data-target="25000">25,000</span></p>
+            </div>
+            <div class="h-8 w-px bg-darkBorder"></div>
+            <div>
+                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider" data-i18n="game_health">Health Score</p>
+                <p class="text-2xl font-bold font-heading text-brand" id="gameHealth">100/100</p>
+            </div>
+        </div>
+
+        <div class="animate-pulse">
+            <span
+                class="px-3 py-1 bg-purple-500/20 text-purple-400 text-xs font-bold rounded-full border border-purple-500/30">
+                <i class="fas fa-gamepad"></i> <span data-i18n="challenge_mode">Challenge Mode Active</span>
+            </span>
+        </div>
+    </div>
+
+    <!-- Active Events & Decisions -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- Scenario Area -->
+        <div class="lg:col-span-2 glass-card p-6 border border-darkBorder rounded-2xl relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent pointer-events-none"></div>
+
+            <h3 class="font-heading font-bold text-lg text-white mb-4 flex items-center gap-2">
+                <i class="fas fa-scroll text-slate-400"></i> <span data-i18n="daily_scenario">Daily Scenario</span>
+            </h3>
+
+            <div id="scenarioBox" class="bg-darkBg p-6 rounded-xl border border-slate-700 shadow-inner min-h-[150px]">
+                <h4 class="text-brand-light font-bold mb-2">Weekend Weather Warning</h4>
+                <p class="text-sm text-slate-300 leading-relaxed mb-6">A massive cold front is approaching resulting in
+                    severe snow tomorrow. People will be panic buying essentials.</p>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <button
+                        class="glass-panel hover:bg-brand/10 hover:border-brand/40 border border-darkBorder p-4 rounded-xl text-left transition-colors"
+                        onclick="makeDecision('stockup')">
+                        <p class="text-white font-bold text-sm mb-1"><i class="fas fa-shopping-basket text-brand"></i>
+                            Stock-up Bread & Milk</p>
+                        <p class="text-xs text-slate-500">Cost: $2,500. Expected ROI: High</p>
+                    </button>
+                    <button
+                        class="glass-panel hover:bg-brand/10 hover:border-brand/40 border border-darkBorder p-4 rounded-xl text-left transition-colors"
+                        onclick="makeDecision('ignore')">
+                        <p class="text-white font-bold text-sm mb-1"><i class="fas fa-times-circle text-red-400"></i> Do
+                            Nothing</p>
+                        <p class="text-xs text-slate-500">Save funds, risk stockout.</p>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mini Dashboard -->
+        <div class="glass-panel p-6 rounded-2xl border border-darkBorder flex flex-col">
+            <h3 class="font-heading font-bold text-lg text-white mb-4 flex items-center gap-2">
+                <i class="fas fa-clipboard-list text-accent"></i> <span data-i18n="game_inventory_status">Inventory Status</span>
+            </h3>
+            <div id="gameInventoryList" class="flex-1 overflow-y-auto custom-scrollbar space-y-3 pr-2">
+                <!-- Injected by JS -->
+                <div class="loader m-auto"></div>
+            </div>
+
+            <button
+                class="w-full mt-4 py-2 border border-brand text-brand hover:bg-brand hover:text-white rounded-lg transition-colors text-sm font-bold" data-i18n="btn_copilot_advise">
+                <i class="fas fa-external-link-alt"></i> Open AI Copilot for Advise
+            </button>
+        </div>
+
+    </div>
+
+    <!-- AI Impact Review -->
+    <div class="glass-card p-6 rounded-2xl border-l-4 border-l-brand">
+        <h3 class="font-bold text-white mb-2" data-i18n="previous_impact">Previous Day Impact</h3>
+        <p class="text-sm text-slate-300" id="impactText">No actions taken yet. Start by managing today's scenario.</p>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let currentDay = 1;
+    let funds = 25000;
+    let health = 100;
+
+    function initGame() {
+        const items = window.retailDataset || [];
+        const invList = document.getElementById('gameInventoryList');
+
+        // Load partial inventory specifically for the game
+        if (invList && items.length > 0) {
+            const gameItems = [
+                items.find(i => i.product_name.includes('Milk')) || items[0],
+                items.find(i => i.product_name.includes('Bread')) || items[1],
+                items.find(i => i.product_name.includes('Eggs')) || items[2],
+                items.find(i => i.category === 'Household') || items[3]
+            ];
+
+            invList.innerHTML = gameItems.map(i => `
+                <div class="flex items-center justify-between p-2 rounded bg-darkBg border border-darkBorder">
+                    <div>
+                        <p class="text-xs font-bold text-white">${i.product_name}</p>
+                        <p class="text-[10px] text-slate-500">Stock: ${i.current_stock}</p>
+                    </div>
+                    <span class="text-xs ${i.trend.includes('-') ? 'text-red-400' : 'text-green-400'}">${i.trend}</span>
+                </div>
+            `).join('');
+        }
+
+        // Handle End Turn
+        document.getElementById('endTurnBtn')?.addEventListener('click', () => {
+            currentDay++;
+            document.getElementById('gameDay').innerText = currentDay;
+
+            // Random scenario generation for next day
+            document.getElementById('scenarioBox').innerHTML = `
+                <div class="flex items-center justify-center h-full text-brand animate-pulse flex-col gap-2">
+                    <i class="fas fa-hourglass-half text-2xl"></i>
+                    <p class="text-sm" data-i18n="simulating_ai">Simulating AI Market Changes...</p>
+                </div>
+            `;
+
+            setTimeout(() => {
+                const scenarios = [
+                    { t: "Viral TikTok Sensation", d: "A local influencer praised 'Organic Snack Bars'. Demand is up 300%.", b1: "Emergency Express Freight ($5k)", b2: "Ignore (Loose Revenue)" },
+                    { t: "Competitor Price Drop", d: "MegaMart down the street cut prices on all Dairy by 15%.", b1: "Price Match AI (Cost $1k margin)", b2: "Hold Prices Keep Margin" }
+                ];
+                const s = scenarios[currentDay % 2];
+
+                document.getElementById('scenarioBox').innerHTML = `
+                    <h4 class="text-brand-light font-bold mb-2">${s.t}</h4>
+                    <p class="text-sm text-slate-300 leading-relaxed mb-6">${s.d}</p>
+                    <div class="grid grid-cols-2 gap-4">
+                        <button class="glass-panel hover:bg-brand/10 hover:border-brand/40 border border-darkBorder p-4 rounded-xl text-left transition-colors" onclick="makeDecision('action')">
+                            <p class="text-white font-bold text-sm mb-1"><i class="fas fa-check text-brand"></i> <span data-i18n="take_action">Take Action</span></p>
+                            <p class="text-[10px] text-slate-500">${s.b1}</p>
+                        </button>
+                        <button class="glass-panel hover:bg-brand/10 hover:border-brand/40 border border-darkBorder p-4 rounded-xl text-left transition-colors" onclick="makeDecision('ignore')">
+                            <p class="text-white font-bold text-sm mb-1"><i class="fas fa-times text-red-400"></i> <span data-i18n="no_action">No Action</span></p>
+                            <p class="text-[10px] text-slate-500">${s.b2}</p>
+                        </button>
+                    </div>
+                `;
+
+                // Re-run i18n
+                if (window.setLanguage) {
+                    const currentLang = localStorage.getItem('retail_lang') || 'en';
+                    window.setLanguage(currentLang);
+                }
+            }, 1500);
+        });
+    }
+
+    if (window.retailDataset && window.retailDataset.length > 0) {
+        initGame();
+    } else {
+        document.addEventListener('retailDataLoaded', initGame);
+    }
+
+    // Make global for onclick
+    window.makeDecision = function (type) {
+        const impact = document.getElementById('impactText');
+        if (type === 'stockup') {
+            funds -= 2500;
+            impact.innerHTML = "<span class='text-green-400'><i class='fas fa-arrow-up'></i> Excellent Call.</span> You stocked up before the storm. Sales surged and profit margin held steady. +$4,500 Revenue.";
+            funds += 4500;
+        } else if (type === 'ignore') {
+            health -= 5;
+            impact.innerHTML = "<span class='text-red-400'><i class='fas fa-arrow-down'></i> Stockout Disaster.</span> Customers were angry they couldn't find bread. Health score dropped.";
+        } else {
+            impact.innerHTML = "Action processed by ML Engine. Calculating long term LTV impact...";
+        }
+
+        document.getElementById('gameFunds').innerText = funds.toLocaleString();
+        document.getElementById('gameHealth').innerText = `${health}/100`;
+
+        // Disable buttons after choice
+        document.querySelectorAll('#scenarioBox button').forEach(b => {
+            b.classList.add('opacity-50', 'cursor-not-allowed', 'pointer-events-none');
+        });
+    };
+</script>
+{% endblock %}

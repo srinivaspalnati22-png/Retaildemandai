@@ -1,0 +1,83 @@
+{% extends "layout.html" %}
+
+{% block page_title %}Competitor Tracking Intelligence{% endblock %}
+
+{% block content %}
+<div id="competitors" class="section-block active space-y-8">
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+        <!-- Local Market Pricing -->
+        <div class="glass-panel p-6 rounded-2xl border border-darkBorder">
+            <h2 class="font-heading font-bold text-xl text-white mb-2 flex items-center gap-2">
+                <i class="fas fa-search-dollar text-green-400"></i> <span data-i18n="price_displacement_title">Price Displacement</span>
+            </h2>
+            <p class="text-sm text-slate-400 mb-6" data-i18n="competitor_scraping_desc">AI continuous scraping of matched SKUs across top 3 local
+                competitors.</p>
+
+            <div class="space-y-4">
+
+                <!-- Competitor 1 -->
+                <div class="bg-darkBg p-4 rounded-xl border border-darkBorder flex items-center justify-between">
+                    <div>
+                        <h4 class="font-bold text-white mb-1 flex items-center gap-2">BigRetail Corp. <span
+                                class="bg-red-500/20 text-red-500 text-[10px] px-2 py-0.5 rounded border border-red-500/30">Aggressive</span>
+                        </h4>
+                        <p class="text-xs text-slate-400"><span data-i18n="avg_pricing_lower">Average pricing is lower than your catalog.</span></p>
+                    </div>
+                    <div class="text-right">
+                        <span class="block text-xl font-bold font-mono text-white">-$1.42</span>
+                        <span class="text-[10px] text-slate-500 uppercase tracking-widest" data-i18n="avg_item_diff">Avg Item Diff</span>
+                    </div>
+                </div>
+
+                <!-- Competitor 2 -->
+                <div
+                    class="bg-darkBg p-4 rounded-xl border border-darkBorder flex items-center justify-between ring-1 ring-brand/30 shadow-[0_0_15px_rgba(99,102,241,0.1)]">
+                    <div>
+                        <h4 class="font-bold text-white mb-1 flex items-center gap-2">LocalMart LLC <span
+                                class="bg-green-500/20 text-green-400 text-[10px] px-2 py-0.5 rounded border border-green-500/30">Passive</span>
+                        </h4>
+                        <p class="text-xs text-slate-400"><span data-i18n="avg_pricing_higher">Average pricing is higher than your catalog.</span></p>
+                    </div>
+                    <div class="text-right">
+                        <span class="block text-xl font-bold font-mono text-green-400">+$0.55</span>
+                        <span class="text-[10px] text-slate-500 uppercase tracking-widest" data-i18n="avg_item_diff">Avg Item Diff</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <button class="w-full mt-6 btn-gradient py-3 rounded-lg text-white text-sm font-bold shadow-lg">
+                <i class="fas fa-magic mr-2"></i> <span data-i18n="btn_auto_match">Auto-Match Local Prices</span>
+            </button>
+        </div>
+
+        <!-- Competitive Sentiment Map -->
+        <div
+            class="glass-card p-6 rounded-2xl border border-darkBorder flex flex-col justify-center items-center relative overflow-hidden text-center">
+            <div
+                class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/dark-matter.png')] opacity-10 pointer-events-none">
+            </div>
+
+            <i class="fas fa-map-marked-alt text-6xl text-brand/20 mb-6"></i>
+            <h3 class="font-heading font-bold text-2xl text-white mb-2 relative z-10" data-i18n="market_share_title">Market Share Dominance</h3>
+            <p class="text-sm text-slate-400 max-w-sm relative z-10" data-i18n="market_share_desc">You currently control <strong
+                    class="text-white">42%</strong> of the local retail footprint for your core product categories based
+                on foot-traffic tracking APIs.</p>
+
+            <div class="w-full max-w-sm h-4 bg-darkBg rounded-full mt-8 overflow-hidden flex border border-darkBorder">
+                <div class="h-full bg-brand" style="width: 42%;" title="You (42%)"></div>
+                <div class="h-full bg-red-500" style="width: 35%;" title="BigRetail (35%)"></div>
+                <div class="h-full bg-slate-500" style="width: 23%;" title="Others (23%)"></div>
+            </div>
+            <div class="flex justify-between w-full max-w-sm mt-2 text-[10px] font-bold text-slate-500 uppercase">
+                <span class="text-brand-light">RetailMind (42%)</span>
+                <span>BigRetail (35%)</span>
+                <span>Others (23%)</span>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

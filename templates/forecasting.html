@@ -1,0 +1,413 @@
+{% extends "layout.html" %}
+
+{% block page_title %}<span data-i18n="page_demand_forecast">Advanced Demand Forecasting</span>{% endblock %}
+
+{% block content %}
+<div id="forecasting" class="section-block active space-y-8">
+    <div class="glass-panel p-6 rounded-2xl border border-darkBorder relative">
+        <div class="absolute top-0 right-0 w-96 h-96 bg-brand/5 rounded-full blur-[100px] pointer-events-none"></div>
+
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 relative z-10">
+            <div>
+                <h2 class="font-heading font-bold text-2xl text-white mb-1" data-i18n="predict_velocity">Predict Product Velocity</h2>
+                <p class="text-sm text-slate-400" data-i18n="forecasting_subtitle">Neural network analysis across multiple temporal horizons.</p>
+            </div>
+            <div class="flex bg-darkBg p-1 rounded-xl border border-darkBorder hidden">
+                <button class="px-4 py-2 rounded-lg text-sm font-medium bg-brand text-white shadow-md active"
+                    id="btnChartWeekly" data-i18n="btn_weekly">Weekly Forecast</button>
+                <button
+                    class="px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white transition-colors"
+                    id="btnChartMonthly" data-i18n="btn_monthly">Monthly Projection</button>
+            </div>
+        </div>
+
+        <!-- NEW FEATURE: Product Demand Forecast Analyzer -->
+        <div
+            class="glass-card p-6 rounded-2xl border border-brand/20 mb-8 relative z-10 shadow-[0_0_30px_rgba(99,102,241,0.1)]">
+            <h2 class="font-heading font-bold text-xl text-white mb-4"><i
+                    class="fas fa-radar text-brand-light mr-2"></i> <span data-i18n="select_product_forecast">Select Product for Demand Forecast</span></h2>
+
+            <div class="flex flex-col md:flex-row items-end gap-4 relative">
+                <div class="flex-1 w-full relative">
+                    <label class="text-xs text-slate-400 mb-2 block uppercase tracking-wider font-bold" data-i18n="analyzer_search_label">Search Product
+                        Configuration</label>
+                    <div class="relative">
+                        <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="analyzerSearchInput"
+                            class="w-full bg-darkBg border border-darkBorder rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-brand transition-colors placeholder-slate-500"
+                            placeholder="Select product (Milk, Bread, Eggs...)" data-i18n-placeholder="analyzer_search_placeholder" autocomplete="off">
+                        <!-- Custom Dropdown populated by JS -->
+                        <div id="analyzerDropdown"
+                            class="absolute top-full left-0 right-0 mt-2 bg-darkCard border border-darkBorder rounded-xl shadow-xl max-h-60 overflow-y-auto z-[9999] hidden custom-scrollbar">
+                        </div>
+                    </div>
+                </div>
+                <button id="btnAnalyzeDemand"
+                    class="w-full md:w-auto px-8 py-3 rounded-xl font-bold bg-gradient-to-r from-brand to-brand-light text-white shadow-lg hover:shadow-brand/50 hover:-translate-y-1 transition-all disabled:opacity-50 disabled:cursor-not-allowed" data-i18n="btn_analyze_demand">
+                    Analyze Demand
+                </button>
+            </div>
+
+            <!-- V5.2 Feature: Visual Product Selection List -->
+            <div class="mt-6 mb-2 relative z-10">
+                <h3 class="text-xs font-bold text-slate-400 mb-3 uppercase tracking-wider"><i
+                        class="fas fa-boxes text-brand-light mr-2"></i> <span data-i18n="quick_analyze_products">Quick Analyze Products</span></h3>
+                <div id="forecastProductList" class="flex overflow-x-auto gap-4 pb-4 custom-scrollbar">
+                    <!-- JS will inject product cards here -->
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div id="analyzerLoading" class="hidden mt-8 flex flex-col items-center justify-center p-8 space-y-4">
+                <div class="w-12 h-12 border-4 border-brand/30 border-t-brand rounded-full animate-spin"></div>
+                <p class="text-brand-light font-medium animate-pulse" data-i18n="analyzer_loading_text">Analyzing product demand...</p>
+            </div>
+
+            <!-- Analysis Results -->
+            <div id="analyzerResults" class="hidden mt-8 space-y-6 opacity-0 translate-y-4 transition-all duration-500">
+
+                <!-- Stock Reorder Alert (hidden if stock is fine) -->
+                <div id="analyzerStockAlert" class="hidden animate-pulse">
+                    <div class="bg-red-500/10 border-l-4 border-red-500 p-4 rounded-r-xl flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center shrink-0">
+                            <i class="fas fa-exclamation-triangle text-red-500"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-red-500 font-bold mb-1" data-i18n="stock_alert">Stock Alert</h4>
+                            <p class="text-sm text-slate-300"><span data-i18n="analyzer_monthly_demand">Predicted Monthly Demand:</span> <span id="alertMonthlyDemand"
+                                    class="font-bold text-white"></span></p>
+                            <p class="text-sm text-slate-300 mb-2"><span data-i18n="analyzer_current_stock">Current Stock:</span> <span id="alertCurrentStock"
+                                    class="font-bold text-white"></span></p>
+                            <p class="text-sm text-red-400 font-medium"><i class="fas fa-arrow-right mr-1"></i>
+                                <span data-i18n="analyzer_rec_label">Recommendation: Reorder additional stock immediately.</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Detail Cards -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="analyzerStatsGrid">
+                    <!-- Populated by JS -->
+                </div>
+
+                <!-- Charts Container -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Weekly Line Chart -->
+                    <div class="glass-card rounded-2xl p-6 border border-darkBorder group hover:border-brand/40 transition-colors">
+                        <h4 class="text-xs font-bold text-slate-400 mb-4 uppercase tracking-wider flex justify-between items-center">
+                            <span><i class="fas fa-chart-line mr-2 text-brand"></i> <span data-i18n="analyzer_weekly_chart">Weekly Demand</span></span>
+                            <span class="text-[10px] px-2 py-0.5 bg-brand/10 text-brand rounded" data-i18n="chart_horizon_7d">7 Days</span>
+                        </h4>
+                        <div class="h-64">
+                            <canvas id="weeklyDemandChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Monthly Bar Chart -->
+                    <div class="glass-card rounded-2xl p-6 border border-darkBorder group hover:border-accent/40 transition-colors">
+                        <h4 class="text-xs font-bold text-slate-400 mb-4 uppercase tracking-wider flex justify-between items-center">
+                            <span><i class="fas fa-chart-bar mr-2 text-accent"></i> <span data-i18n="analyzer_monthly_chart">Monthly Demand</span></span>
+                            <span class="text-[10px] px-2 py-0.5 bg-accent/10 text-accent rounded" data-i18n="chart_horizon_30d">30 Days</span>
+                        </h4>
+                        <div class="h-64">
+                            <canvas id="monthlyDemandChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Automated Insight -->
+                <div class="col-span-1 lg:col-span-2 mt-2">
+                    <div
+                        class="bg-darkBg p-5 rounded-xl border border-brand/30 flex items-start gap-4 relative overflow-hidden group hover:border-brand transition-colors">
+                        <div class="absolute inset-0 bg-gradient-to-r from-brand/5 to-transparent pointer-events-none">
+                        </div>
+                        <div
+                            class="w-12 h-12 rounded-full bg-brand/20 border border-brand/50 flex items-center justify-center shrink-0">
+                            <i class="fas fa-robot text-brand-light group-hover:scale-110 transition-transform"></i>
+                        </div>
+                        <div
+                            class="relative z-10 w-full flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div>
+                                <h4 class="text-sm font-bold text-white mb-1" data-i18n="analyzer_insight_title">AI Demand Insight</h4>
+                                <p id="analyzerInsightText" class="text-sm text-slate-300 leading-relaxed"></p>
+                            </div>
+                            <div id="analyzerTrendBadge" class="shrink-0">
+                                <!-- JS overrides this badge content -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- OLD: V4/V5 Features (Hiding them slightly or integrating them out) -->
+
+        <!-- OLD DEMAND CHARTS - HIDDEN FOR NEW FEATURE REPLACEMENT -->
+        <div class="hidden">
+            <!-- V4.0 Feature: AI Demand DNA Selector -->
+            <div class="mb-6 flex flex-col lg:flex-row items-stretch lg:items-center gap-4 relative z-10">
+                <div class="flex items-center gap-4 p-4 border border-darkBorder rounded-xl bg-darkBg/50 flex-1">
+                    <i class="fas fa-search text-brand-light"></i>
+                    <select id="forecastItemSelector"
+                        class="bg-transparent text-white font-bold outline-none flex-1 appearance-none cursor-pointer">
+                        <option value="Aggregated" class="bg-darkBg text-white">Select a Product to view Demand DNA...
+                        </option>
+                        <!-- JS will populate from 50-Item Dataset -->
+                    </select>
+                </div>
+            </div>
+
+
+            <!-- Dynamic Chart Canvas (Line / Bar) -->
+            <div class="h-80 w-full relative z-10">
+                <canvas id="mainForecastChart"></canvas>
+            </div>
+
+            <!-- NEW: Dedicated Product Analysis Panel -->
+            <div id="productAnalysisContainer" class="mt-8 hidden relative z-10 transition-all duration-500">
+                <h3 class="text-xs font-bold text-slate-400 mb-3 uppercase tracking-wider"><i
+                        class="fas fa-chart-pie text-brand-light mr-2"></i> Product Based Analysis</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="productAnalysisGrid">
+                    <!-- Data populated by JS -->
+                </div>
+            </div>
+
+            <!-- Contextual NLP Insight generated based on chart -->
+            <div class="mt-6 p-4 rounded-xl bg-gradient-to-r from-brand/10 to-transparent border-l-4 border-brand">
+                <p class="text-sm text-brand-light font-medium flex items-center gap-2" id="forecastContextText">
+                    <i class="fas fa-magic"></i> AI Engine analyzing temporal sales velocity...
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function initializeForecastingSelector() {
+        const listContainer = document.getElementById('forecastProductList');
+        const items = window.retailDataset || [];
+
+        // Always populate the visual product list if it exists and data is ready
+        if (listContainer && items.length > 0) {
+            listContainer.innerHTML = '';
+
+            items.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = "min-w-[150px] flex-shrink-0 bg-darkBg border border-darkBorder hover:border-brand/40 rounded-xl p-3 cursor-pointer transition-colors flex flex-col items-center text-center group product-card-btn";
+                card.dataset.id = item.id || index;
+
+                // Product-specific image map (by product name keywords)
+                const productImageMap = {
+                    // Dairy
+                    'milk': 'https://images.unsplash.com/photo-1550583724-b2692b85b150?w=200&q=80',
+                    'butter': 'https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=200&q=80',
+                    'cheese': 'https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?w=200&q=80',
+                    'yogurt': 'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=200&q=80',
+                    'eggs': 'https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?w=200&q=80',
+                    'egg': 'https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?w=200&q=80',
+                    // Bakery
+                    'bread': 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=200&q=80',
+                    'croissant': 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=200&q=80',
+                    'muffin': 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=200&q=80',
+                    'bagel': 'https://images.unsplash.com/photo-1564241031934-eff00a0bc542?w=200&q=80',
+                    'bun': 'https://images.unsplash.com/photo-1549931319-a545dcf3bc7f?w=200&q=80',
+                    // Beverages
+                    'cola': 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=200&q=80',
+                    'soft drink': 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=200&q=80',
+                    'tea': 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=200&q=80',
+                    'coffee': 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=200&q=80',
+                    'juice': 'https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=200&q=80',
+                    'water': 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=200&q=80',
+                    'energy drink': 'https://images.unsplash.com/photo-1570831739435-6601aa3fa4fb?w=200&q=80',
+                    'sports drink': 'https://images.unsplash.com/photo-1570831739435-6601aa3fa4fb?w=200&q=80',
+                    'sparkling': 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=200&q=80',
+                    'kombucha': 'https://images.unsplash.com/photo-1563227812-0ea4c22e6cc8?w=200&q=80',
+                    'iced tea': 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=200&q=80',
+                    'green tea': 'https://images.unsplash.com/photo-1546939629-c8c7f2a44aeb?w=200&q=80',
+                    // Pantry
+                    'rice': 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=200&q=80',
+                    'oil': 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=200&q=80',
+                    'sugar': 'https://images.unsplash.com/photo-1559181567-c3190ca9be46?w=200&q=80',
+                    'salt': 'https://images.unsplash.com/photo-1518110925495-5fe2fda0442c?w=200&q=80',
+                    'noodle': 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=200&q=80',
+                    'ketchup': 'https://images.unsplash.com/photo-1607631568010-a87245c0daf8?w=200&q=80',
+                    'mayonnaise': 'https://images.unsplash.com/photo-1596392301391-e8e4d9c3e451?w=200&q=80',
+                    'peanut butter': 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=200&q=80',
+                    'jam': 'https://images.unsplash.com/photo-1582024554266-67d4f16c2942?w=200&q=80',
+                    'salsa': 'https://images.unsplash.com/photo-1599599810769-bcde5a160d32?w=200&q=80',
+                    // Snacks & Candy
+                    'biscuit': 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=200&q=80',
+                    'chips': 'https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=200&q=80',
+                    'snack': 'https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=200&q=80',
+                    'popcorn': 'https://images.unsplash.com/photo-1578849278619-e73505e9610f?w=200&q=80',
+                    'potato snack': 'https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=200&q=80',
+                    'peanut': 'https://images.unsplash.com/photo-1567892320421-7c5c4212e660?w=200&q=80',
+                    'tortilla': 'https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=200&q=80',
+                    'chocolate bar': 'https://images.unsplash.com/photo-1549007994-cb92caebd54b?w=200&q=80',
+                    'chocolate': 'https://images.unsplash.com/photo-1549007994-cb92caebd54b?w=200&q=80',
+                    'gummy': 'https://images.unsplash.com/photo-1582058091551-be0f16a55cfd?w=200&q=80',
+                    'candy': 'https://images.unsplash.com/photo-1582058091551-be0f16a55cfd?w=200&q=80',
+                    'gum': 'https://images.unsplash.com/photo-1582058091551-be0f16a55cfd?w=200&q=80',
+                    // Personal Care
+                    'soap': 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=200&q=80',
+                    'shampoo': 'https://images.unsplash.com/photo-1556227702-d1e4e7b5c232?w=200&q=80',
+                    'toothpaste': 'https://images.unsplash.com/photo-1559591935-c3d3f2c00be3?w=200&q=80',
+                    'handwash': 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?w=200&q=80',
+                    'face wash': 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=200&q=80',
+                    'hair oil': 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?w=200&q=80',
+                    'cotton swab': 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=200&q=80',
+                    // Household
+                    'detergent': 'https://images.unsplash.com/photo-1583947581924-860bda6a26df?w=200&q=80',
+                    'dishwash': 'https://images.unsplash.com/photo-1583947581924-860bda6a26df?w=200&q=80',
+                    'tissue': 'https://images.unsplash.com/photo-1584556326561-43ed3f4a7f3d?w=200&q=80',
+                    'toilet paper': 'https://images.unsplash.com/photo-1584556326561-43ed3f4a7f3d?w=200&q=80',
+                    'paper towel': 'https://images.unsplash.com/photo-1584556326561-43ed3f4a7f3d?w=200&q=80',
+                    'trash bag': 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&q=80',
+                    'air freshener': 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?w=200&q=80',
+                    'cleaner': 'https://images.unsplash.com/photo-1583947581924-860bda6a26df?w=200&q=80',
+                    // Baby Products
+                    'diaper': 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&q=80',
+                    'baby': 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&q=80',
+                    'wipe': 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=200&q=80',
+                    // Produce
+                    'avocado': 'https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=200&q=80',
+                    'banana': 'https://images.unsplash.com/photo-1543218024-57a70143c369?w=200&q=80',
+                    'apple': 'https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=200&q=80',
+                    'carrot': 'https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=200&q=80',
+                    'spinach': 'https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=200&q=80',
+                    'potato': 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=200&q=80',
+                    'onion': 'https://images.unsplash.com/photo-1606923829579-0cb981a83e2e?w=200&q=80',
+                    'garlic': 'https://images.unsplash.com/photo-1540148426945-6cf22a6b2383?w=200&q=80',
+                    'tomato': 'https://images.unsplash.com/photo-1546470427-f5b4b52b99b0?w=200&q=80',
+                    'cucumber': 'https://images.unsplash.com/photo-1568584711075-3d021a7c3ca3?w=200&q=80',
+                    // Meat & Seafood
+                    'chicken': 'https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=200&q=80',
+                    'beef': 'https://images.unsplash.com/photo-1588347818481-6f8d4a1e1a49?w=200&q=80',
+                    'pork': 'https://images.unsplash.com/photo-1432139509613-5c4255815697?w=200&q=80',
+                    'salmon': 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=200&q=80',
+                    'shrimp': 'https://images.unsplash.com/photo-1565680018093-ebb6b9ab5460?w=200&q=80',
+                    // Frozen
+                    'frozen pizza': 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=200&q=80',
+                    'ice cream': 'https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=200&q=80',
+                    'frozen': 'https://images.unsplash.com/photo-1534483509719-3feaee7c30da?w=200&q=80',
+                    'corn': 'https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=200&q=80',
+                    'berries': 'https://images.unsplash.com/photo-1563746099882-28e2f948f9f0?w=200&q=80',
+                    // Dairy Alternatives
+                    'soy milk': 'https://images.unsplash.com/photo-1550583724-b2692b85b150?w=200&q=80',
+                    'almond milk': 'https://images.unsplash.com/photo-1550583724-b2692b85b150?w=200&q=80',
+                    'oat milk': 'https://images.unsplash.com/photo-1550583724-b2692b85b150?w=200&q=80',
+                    'vegan': 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=200&q=80',
+                    // Electronics & Hardware
+                    'battery': 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=200&q=80',
+                    'bulb': 'https://images.unsplash.com/photo-1535932522539-6272f78fea94?w=200&q=80',
+                    'extension': 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=200&q=80',
+                    'glue': 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&q=80',
+                    'tape': 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&q=80',
+                    // Pet
+                    'cat food': 'https://images.unsplash.com/photo-1571566882372-1598d88abd90?w=200&q=80',
+                    'dog food': 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&q=80',
+                    'cat litter': 'https://images.unsplash.com/photo-1571566882372-1598d88abd90?w=200&q=80',
+                    'dog chew': 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&q=80',
+                    'flea': 'https://images.unsplash.com/photo-1571566882372-1598d88abd90?w=200&q=80',
+                    // Stationery
+                    'notebook': 'https://images.unsplash.com/photo-1531346878377-a5be20888e57?w=200&q=80',
+                    'pen': 'https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?w=200&q=80',
+                    'pencil': 'https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?w=200&q=80',
+                };
+
+                // Category fallback images
+                const categoryImageMap = {
+                    'Dairy': 'https://images.unsplash.com/photo-1563636619-e9143da7f884?w=200&q=80',
+                    'Bakery': 'https://images.unsplash.com/photo-1549931319-a545dcf3bc7f?w=200&q=80',
+                    'Beverages': 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=200&q=80',
+                    'Pantry': 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=200&q=80',
+                    'Snacks': 'https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=200&q=80',
+                    'Candy': 'https://images.unsplash.com/photo-1549007994-cb92caebd54b?w=200&q=80',
+                    'Personal Care': 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=200&q=80',
+                    'Household': 'https://images.unsplash.com/photo-1583947581924-860bda6a26df?w=200&q=80',
+                    'Baby Products': 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&q=80',
+                    'Produce': 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=200&q=80',
+                    'Meat & Poultry': 'https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=200&q=80',
+                    'Seafood': 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=200&q=80',
+                    'Frozen': 'https://images.unsplash.com/photo-1534483509719-3feaee7c30da?w=200&q=80',
+                    'Dairy Alternatives': 'https://images.unsplash.com/photo-1550583724-b2692b85b150?w=200&q=80',
+                    'Electronics': 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=200&q=80',
+                    'Hardware': 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&q=80',
+                    'Pet Supplies': 'https://images.unsplash.com/photo-1571566882372-1598d88abd90?w=200&q=80',
+                    'Stationery': 'https://images.unsplash.com/photo-1531346878377-a5c20888e57?w=200&q=80',
+                };
+
+                // Find image: match by product name keywords first, then category
+                const nameLower = item.product_name.toLowerCase();
+                let imgUrl = null;
+                for (const [keyword, url] of Object.entries(productImageMap)) {
+                    if (nameLower.includes(keyword)) { imgUrl = url; break; }
+                }
+                if (!imgUrl) imgUrl = categoryImageMap[item.category] || 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=200&q=80';
+
+                card.innerHTML = `
+                    <div class="w-12 h-12 rounded-full overflow-hidden bg-darkCard border border-darkBorder text-slate-500 mb-2 group-hover:scale-110 transition-transform flex items-center justify-center">
+                        <img src="${imgUrl}" alt="${item.product_name}" class="w-full h-full object-cover"
+                             onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\\'text-lg font-bold text-brand-light\\'>' + '${item.product_name[0]}' + '</span>';">
+                    </div>
+                    <p class="text-[11px] font-bold text-white w-full truncate" title="${item.product_name}">${item.product_name}</p>
+                    <p class="text-[10px] text-brand w-full truncate">${item.category}</p>
+                `;
+
+                card.addEventListener('click', () => {
+                    // Fill the analyzer search input with selected product
+                    const analyzerInput = document.getElementById('analyzerSearchInput');
+                    if (analyzerInput) {
+                        analyzerInput.value = item.product_name;
+                        analyzerInput.dataset.selectedId = card.dataset.id;
+                    }
+
+                    // Highlight selected card
+                    document.querySelectorAll('.product-card-btn').forEach(c => {
+                        c.classList.remove('border-brand', 'bg-brand/10');
+                        c.classList.add('border-darkBorder', 'bg-darkBg');
+                    });
+                    card.classList.remove('border-darkBorder', 'bg-darkBg');
+                    card.classList.add('border-brand', 'bg-brand/10');
+
+                    // Automatically trigger full demand analysis
+                    if (window.renderDemandChart) {
+                        window.renderDemandChart('both', card.dataset.id);
+                    }
+                });
+
+                listContainer.appendChild(card);
+            });
+        }
+
+        // Sync card highlight when "Analyze Demand" button is clicked via search
+        const analyzerInput = document.getElementById('analyzerSearchInput');
+        const btnAnalyze = document.getElementById('btnAnalyzeDemand');
+        if (analyzerInput && btnAnalyze) {
+            btnAnalyze.addEventListener('click', () => {
+                const id = analyzerInput.dataset.selectedId;
+                if (id) {
+                    document.querySelectorAll('.product-card-btn').forEach(c => {
+                        if (c.dataset.id == id) {
+                            c.classList.remove('border-darkBorder', 'bg-darkBg');
+                            c.classList.add('border-brand', 'bg-brand/10');
+                            c.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                        } else {
+                            c.classList.remove('border-brand', 'bg-brand/10');
+                            c.classList.add('border-darkBorder', 'bg-darkBg');
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+    if (window.retailDataset && window.retailDataset.length > 0) {
+        initializeForecastingSelector();
+    } else {
+        document.addEventListener('retailDataLoaded', initializeForecastingSelector);
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+
+{% block page_title %}Trending Products Engine{% endblock %}
+
+{% block content %}
+<div id="trends" class="section-block active space-y-8">
+    <div class="flex items-center justify-between mb-2 mt-4">
+        <h2 class="font-heading font-bold text-2xl text-white flex items-center gap-2" data-i18n="trends_live_title">
+            Live Market Trends <i class="fas fa-fire text-orange-500 animate-pulse"></i>
+        </h2>
+        <span
+            class="text-sm bg-darkBorder px-3 py-1 rounded-full text-slate-400 border border-slate-700 flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span> <span
+                data-i18n="trends_streaming_label">Streaming AI Data</span>
+        </span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="trendsContainer">
+        <!-- Cards Injected via JS -->
+    </div>
+
+    <div
+        class="mt-8 glass-panel border border-brand/20 p-6 rounded-2xl bg-gradient-to-br from-darkBg to-brand/5 relative overflow-hidden">
+        <div class="relative z-10">
+            <h3 class="font-bold text-white mb-2"><i class="fas fa-robot text-brand mr-2"></i> <span
+                    data-i18n="trends_engine_logic">Trend Engine Logic</span></h3>
+            <p class="text-sm text-slate-400 max-w-3xl leading-relaxed" data-i18n="trends_engine_description">The Trend
+                Detection engine uses real-time
+                sentiment analysis scraped from local social media geo-tags, combined with velocity mapping of recent
+                Point-of-Sale (POS) data, to instantly flag anomalous baseline deviations before they become historical
+                facts.</p>
+        </div>
+        <i class="fas fa-chart-network absolute -right-10 -bottom-10 text-9xl text-brand/5"></i>
+    </div>
+</div>
+{% endblock %}

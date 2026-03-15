@@ -1,0 +1,136 @@
+{% extends "layout.html" %}
+
+{% block page_title %}Geo Demand Intelligence{% endblock %}
+
+{% block header_actions %}
+<button
+    class="flex items-center gap-2 bg-brand/20 hover:bg-brand border border-brand/30 px-4 py-2 rounded-lg text-brand-light hover:text-white text-sm font-medium transition-colors">
+    <i class="fas fa-map-marker-alt"></i> <span data-i18n="btn_auto_detect">Auto-Detect Region</span>
+</button>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <div class="glass-card p-6 rounded-2xl">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Map Visualization Zone -->
+            <div class="flex-1">
+                <h3 class="font-heading font-bold text-lg text-white mb-6 flex items-center gap-2">
+                    <i class="fas fa-satellite text-blue-400"></i> <span data-i18n="geo_topography_title">Localized Demand Topography</span>
+                </h3>
+                <!-- Chart.js Bubble or Scatter Map Placeholder -->
+                <div class="h-[400px] w-full relative bg-darkBg border border-darkBorder rounded-xl p-4">
+                    <canvas id="geoMapChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Regional Top Movers List -->
+            <div class="w-full lg:w-96 flex flex-col gap-4">
+                <h3 class="font-heading font-bold text-lg text-white mb-2 flex items-center gap-2">
+                    <i class="fas fa-fire text-orange-400"></i> <span data-i18n="regional_spikes_title">Regional Spikes</span>
+                </h3>
+                <div id="regionalSpikeList" class="flex-1 overflow-y-auto custom-scrollbar space-y-3">
+                    <!-- Rendered by JS based on Dataset -->
+                    <div class="flex items-center justify-center p-10">
+                        <div class="loader"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function initGeoMap() {
+        // 1. Initialize Geo Map (Chart.js Bubble Chart representing cities/zones)
+        const ctx = document.getElementById('geoMapChart');
+        if (ctx) {
+            new Chart(ctx, {
+                type: 'bubble',
+                data: {
+                    datasets: [{
+                        label: 'High Demand Zones',
+                        data: [
+                            { x: 20, y: 30, r: 15 }, // Zone A
+                            { x: 40, y: 10, r: 10 }, // Zone B
+                            { x: 15, y: 60, r: 25 }, // Zone C (High)
+                            { x: 70, y: 40, r: 30 }, // Zone D (Highest)
+                            { x: 80, y: 80, r: 12 }, // Zone E
+                            { x: 50, y: 50, r: 8 }  // Zone F
+                        ],
+                        backgroundColor: 'rgba(99, 102, 241, 0.6)',
+                        borderColor: 'rgb(99, 102, 241)',
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'Slumping Zones',
+                        data: [
+                            { x: 10, y: 80, r: 5 },
+                            { x: 60, y: 20, r: 8 },
+                            { x: 30, y: 50, r: 12 }
+                        ],
+                        backgroundColor: 'rgba(239, 68, 68, 0.5)',
+                        borderColor: 'rgb(239, 68, 68)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { display: false, min: 0, max: 100 },
+                        y: { display: false, min: 0, max: 100 }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return 'Zone Heat: ' + context.raw.r;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 2. Generate Regional Top Movers from the 50-Item Dataset
+        const items = window.retailDataset || [];
+        const spikeList = document.getElementById('regionalSpikeList');
+
+        if (spikeList && items.length > 0) {
+            // Find items with high positive trends
+            const spikeItems = items.filter(i => i.trend.includes('+') && parseInt(i.trend.replace('+', '')) > 10).slice(0, 5);
+
+            const regions = ['North Hub', 'Downtown Metro', 'East Side Station', 'West Valley', 'South Retail Park'];
+
+            spikeList.innerHTML = spikeItems.map((item, index) => `
+                <div class="glass-panel p-4 rounded-xl border border-darkBorder hover:border-brand/40 transition-colors cursor-crosshair">
+                    <p class="text-[10px] text-slate-500 font-bold uppercase mb-1 flex items-center justify-between">
+                        <span><i class="fas fa-map-pin text-brand-light mr-1"></i> ${regions[index % regions.length]}</span>
+                        <span class="text-green-400"><span>${item.trend}</span> <span data-i18n="local_lift">Local Lift</span></span>
+                    </p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-white font-bold text-sm">${item.product_name}</span>
+                        <span class="text-xs text-slate-400"><span data-i18n="volume">Vol</span>: ${item.daily_sales * 3}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            // Re-run i18n
+            if (window.setLanguage) {
+                const currentLang = localStorage.getItem('retail_lang') || 'en';
+                window.setLanguage(currentLang);
+            }
+        }
+    }
+
+    if (window.retailDataset && window.retailDataset.length > 0) {
+        initGeoMap();
+    } else {
+        document.addEventListener('retailDataLoaded', initGeoMap);
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+.env
+
+# Web
+node_modules/
+.DS_Store
+dist/
+build/
+.next/
+.vscode/
+.idea/
+
+# Flask
+instance/
+.webassets-cache
+
+# Data
+*.csv
+!static/data/dummy_template.csv

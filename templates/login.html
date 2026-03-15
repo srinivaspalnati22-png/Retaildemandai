@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - RetailMind AI</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#0b0f19',
+                        darkCard: '#151b2b',
+                        brand: { DEFAULT: '#6366f1', light: '#818cf8' },
+                        accent: { DEFAULT: '#06b6d4' }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Outfit', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        .lang-pill {
+            background: rgba(99, 102, 241, 0.08);
+            border: 1px solid rgba(99, 102, 241, 0.25);
+            border-radius: 1rem;
+            padding: 0.5rem 1.25rem;
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            appearance: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .lang-pill:hover,
+        .lang-pill:focus {
+            border-color: rgba(99, 102, 241, 0.7);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+            color: #fff;
+        }
+
+        .lang-pill option {
+            background: #151b2b;
+            color: #fff;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.45s ease both;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-darkBg text-slate-300 font-sans antialiased min-h-screen flex items-center justify-center relative overflow-hidden">
+
+    <!-- Background glow nodes -->
+    <div
+        class="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-brand/20 rounded-full blur-[120px] pointer-events-none">
+    </div>
+    <div
+        class="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-accent/20 rounded-full blur-[120px] pointer-events-none">
+    </div>
+
+    <div class="w-full max-w-md p-6 relative z-10 fade-in">
+
+        <!-- Logo -->
+        <div class="flex items-center justify-center gap-3 mb-5 cursor-pointer" onclick="window.location.href='/'">
+            <div
+                class="w-12 h-12 rounded-xl bg-gradient-to-br from-brand to-accent flex items-center justify-center shadow-lg shadow-brand/30">
+                <i class="fas fa-bolt text-white text-xl"></i>
+            </div>
+            <span class="font-heading font-bold text-3xl text-white tracking-tight">Retail<span
+                    class="text-brand-light">Mind</span></span>
+        </div>
+
+        <!-- ====== LANGUAGE SELECTOR ====== -->
+        <div class="flex flex-col items-center mb-7" id="loginLangSection">
+            <p class="text-xs text-slate-500 mb-2 font-medium tracking-wide uppercase" id="langPromptLabel">🌐 Select
+                Your Language</p>
+            <div class="relative">
+                <select id="loginLangSelector" class="lang-selector lang-pill pr-8"
+                    onchange="handleLoginLangChange(this.value)">
+                    <option value="en">🇬🇧 English</option>
+                    <option value="hi">🇮🇳 हिंदी</option>
+                    <option value="te">🇮🇳 తెలుగు</option>
+                    <option value="ta">🇮🇳 தமிழ்</option>
+                    <option value="kn">🇮🇳 ಕನ್ನಡ</option>
+                    <option value="ml">🇮🇳 മലയാളം</option>
+                    <option value="bn">🇮🇳 বাংলা</option>
+                    <option value="mr">🇮🇳 मराठी</option>
+                    <option value="es">🇪🇸 Español</option>
+                    <option value="fr">🇫🇷 Français</option>
+                </select>
+                <i
+                    class="fas fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs pointer-events-none"></i>
+            </div>
+        </div>
+        <!-- ================================ -->
+
+        <!-- Auth Card -->
+        <div
+            class="glass-panel border border-white/10 rounded-2xl p-8 shadow-2xl relative overflow-hidden backdrop-blur-xl bg-darkCard/80">
+
+            <div class="text-center mb-8">
+                <h2 id="loginTitle" class="font-heading text-2xl font-bold text-white mb-2">Welcome Back</h2>
+                <p id="loginSubtitle" class="text-sm text-slate-400">Sign in to access your predictive analytics
+                    terminal.</p>
+            </div>
+
+            <!-- Login Mock Forms -->
+            <form class="space-y-4 mb-6" onsubmit="event.preventDefault(); window.location.href='/dashboard';">
+                <div>
+                    <label id="loginEmailLabel" class="block text-xs font-medium text-slate-400 mb-1 ml-1">Work
+                        Email</label>
+                    <div class="relative">
+                        <i class="fas fa-envelope absolute left-4 top-3.5 text-slate-500 text-sm"></i>
+                        <input type="email" id="loginEmailInput" placeholder="manager@retailstore.com"
+                            class="w-full bg-darkBg/50 border border-slate-700 rounded-xl py-3 pl-10 pr-4 text-sm text-white focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand transition-colors">
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-1 ml-1">
+                        <label id="loginPassLabel" class="block text-xs font-medium text-slate-400">Password</label>
+                        <a href="#" id="loginForgot"
+                            class="text-xs text-brand hover:text-brand-light transition-colors">Forgot?</a>
+                    </div>
+                    <div class="relative">
+                        <i class="fas fa-lock absolute left-4 top-3.5 text-slate-500 text-sm"></i>
+                        <input type="password" placeholder="••••••••"
+                            class="w-full bg-darkBg/50 border border-slate-700 rounded-xl py-3 pl-10 pr-4 text-sm text-white focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand transition-colors">
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <button type="submit"
+                        class="w-full btn-gradient py-3 rounded-xl text-white font-bold shadow-lg hover:shadow-brand/20 transition-all flex justify-center items-center gap-2">
+                        <span id="loginBtnText">Sign In</span> <i class="fas fa-arrow-right text-sm"></i>
+                    </button>
+                </div>
+            </form>
+
+            <div class="relative flex py-4 items-center">
+                <div class="flex-grow border-t border-slate-700"></div>
+                <span id="loginOrText"
+                    class="flex-shrink-0 mx-4 text-slate-500 text-xs uppercase font-bold tracking-wider">Or continue
+                    with</span>
+                <div class="flex-grow border-t border-slate-700"></div>
+            </div>
+
+            <div class="space-y-3 mt-4">
+                <!-- Google Login Mock -->
+                <button onclick="window.location.href='/dashboard'"
+                    class="w-full flex items-center justify-center gap-3 bg-white hover:bg-slate-100 text-slate-900 py-3 rounded-xl text-sm font-bold transition-colors">
+                    <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="w-5 h-5">
+                    <span id="loginGoogleText">Sign in with Google</span>
+                </button>
+
+                <!-- Hackathon Demo Fast-Track -->
+                <button onclick="window.location.href='/dashboard'"
+                    class="w-full flex items-center justify-center gap-3 glass-card hover:bg-slate-800 border border-slate-600 py-3 rounded-xl text-sm font-bold text-white transition-colors group">
+                    <i class="fas fa-rocket text-accent group-hover:animate-bounce"></i>
+                    <span id="loginDemoText">Try Demo Account</span>
+                </button>
+            </div>
+
+        </div>
+
+        <p class="text-center text-xs text-slate-500 mt-6">
+            By signing in, you agree to our <a href="#" class="text-slate-400 hover:text-white underline">Terms of
+                Service</a> &amp; <a href="#" class="text-slate-400 hover:text-white underline">Privacy Policy</a>.
+        </p>
+
+    </div>
+
+    <!-- i18n for login page text (inline) -->
+    <script src="{{ url_for('static', filename='js/i18n.js') }}"></script>
+    <script>
+        const loginStrings = {
+            en: { title: 'Welcome Back', subtitle: 'Sign in to access your predictive analytics terminal.', email: 'Work Email', pass: 'Password', forgot: 'Forgot?', btn: 'Sign In', or: 'Or continue with', google: 'Sign in with Google', demo: 'Try Demo Account', prompt: '🌐 Select Your Language' },
+            hi: { title: 'वापस स्वागत है', subtitle: 'अपने पूर्वानुमान विश्लेषण टर्मिनल तक पहुंचने के लिए साइन इन करें।', email: 'कार्य ईमेल', pass: 'पासवर्ड', forgot: 'भूल गए?', btn: 'साइन इन करें', or: 'या जारी रखें', google: 'Google के साथ साइन इन करें', demo: 'डेमो खाता आजमाएं', prompt: '🌐 अपनी भाषा चुनें' },
+            te: { title: 'తిరిగి స్వాగతం', subtitle: 'మీ విశ్లేషణ టర్మినల్‌ను యాక్సెస్ చేయడానికి సైన్ ఇన్ చేయండి.', email: 'వర్క్ ఇమెయిల్', pass: 'పాస్‌వర్డ్', forgot: 'మర్చిపోయారా?', btn: 'సైన్ ఇన్ చేయండి', or: 'లేదా కొనసాగించండి', google: 'Google తో సైన్ ఇన్ చేయండి', demo: 'డెమో ఖాతా ప్రయత్నించండి', prompt: '🌐 మీ భాషను ఎంచుకోండి' },
+            ta: { title: 'மீண்டும் வருக', subtitle: 'உங்கள் முன்னறிவிப்பு பகுப்பாய்வு முனையத்தை அணுக உள்நுழையுங்கள்.', email: 'வேலை மின்னஞ்சல்', pass: 'கடவுச்சொல்', forgot: 'மறந்தீர்களா?', btn: 'உள்நுழைக', or: 'அல்லது தொடரவும்', google: 'Google மூலம் உள்நுழைக', demo: 'டெமோ கணக்கை முயற்சிக்கவும்', prompt: '🌐 உங்கள் மொழியை தேர்ந்தெடுக்கவும்' },
+            kn: { title: 'ಮತ್ತೆ ಸ್ವಾಗತ', subtitle: 'ನಿಮ್ಮ ವಿಶ್ಲೇಷಣೆ ಟರ್ಮಿನಲ್ ಪ್ರವೇಶಿಸಲು ಸೈನ್ ಇನ್ ಮಾಡಿ.', email: 'ಕೆಲಸದ ಇಮೇಲ್', pass: 'ಪಾಸ್‌ವರ್ಡ್', forgot: 'ಮರೆತಿದ್ದೀರಾ?', btn: 'ಸೈನ್ ಇನ್ ಮಾಡಿ', or: 'ಅಥವಾ ಮುಂದುವರಿಯಿರಿ', google: 'Google ನೊಂದಿಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ', demo: 'ಡೆಮೊ ಖಾತೆ ಪ್ರಯತ್ನಿಸಿ', prompt: '🌐 ನಿಮ್ಮ ಭಾಷೆ ಆಯ್ಕೆಮಾಡಿ' },
+            ml: { title: 'തിരിച്ചുവരവ് സ്വാഗതം', subtitle: 'നിങ്ങളുടെ വിശകലന ടെർമിനൽ ആക്സസ് ചെയ്യാൻ സൈൻ ഇൻ ചെയ്യുക.', email: 'ജോലി ഇമെയിൽ', pass: 'പാസ്‌വേഡ്', forgot: 'മറന്നോ?', btn: 'സൈൻ ഇൻ ചെയ്യുക', or: 'അല്ലെങ്കിൽ തുടരുക', google: 'Google ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യുക', demo: 'ഡെമോ അക്കൗണ്ട് പരീക്ഷിക്കുക', prompt: '🌐 നിങ്ങളുടെ ഭാഷ തിരഞ്ഞെടുക്കുക' },
+            bn: { title: 'ফিরে আসতে স্বাগতম', subtitle: 'আপনার বিশ্লেষণ টার্মিনাল অ্যাক্সেস করতে সাইন ইন করুন।', email: 'কাজের ইমেইল', pass: 'পাসওয়ার্ড', forgot: 'ভুলে গেছেন?', btn: 'সাইন ইন করুন', or: 'অথবা চালিয়ে যান', google: 'Google দিয়ে সাইন ইন করুন', demo: 'ডেমো অ্যাকাউন্ট ব্যবহার করুন', prompt: '🌐 আপনার ভাষা নির্বাচন করুন' },
+            mr: { title: 'परत स्वागत आहे', subtitle: 'तुमच्या विश्लेषण टर्मिनलमध्ये प्रवेश करण्यासाठी साइन इन करा.', email: 'कार्य ईमेल', pass: 'पासवर्ड', forgot: 'विसरलात?', btn: 'साइन इन करा', or: 'किंवा सुरू ठेवा', google: 'Google सह साइन इन करा', demo: 'डेमो खाते वापरून पहा', prompt: '🌐 तुमची भाषा निवडा' },
+            es: { title: 'Bienvenido de Nuevo', subtitle: 'Inicia sesión para acceder a tu terminal de análisis.', email: 'Email de Trabajo', pass: 'Contraseña', forgot: '¿Olvidaste?', btn: 'Iniciar Sesión', or: 'O continúa con', google: 'Iniciar con Google', demo: 'Probar Cuenta Demo', prompt: '🌐 Selecciona tu Idioma' },
+            fr: { title: 'Bienvenue', subtitle: 'Connectez-vous pour accéder à votre terminal analytique.', email: 'Email Professionnel', pass: 'Mot de passe', forgot: 'Oublié?', btn: 'Se Connecter', or: 'Ou continuer avec', google: 'Se connecter avec Google', demo: 'Essayer le Compte Démo', prompt: '🌐 Choisissez votre Langue' }
+        };
+
+        function applyLoginStrings(lang) {
+            const s = loginStrings[lang] || loginStrings['en'];
+            document.getElementById('loginTitle').textContent = s.title;
+            document.getElementById('loginSubtitle').textContent = s.subtitle;
+            document.getElementById('loginEmailLabel').textContent = s.email;
+            document.getElementById('loginPassLabel').textContent = s.pass;
+            document.getElementById('loginForgot').textContent = s.forgot;
+            document.getElementById('loginBtnText').textContent = s.btn;
+            document.getElementById('loginOrText').textContent = s.or;
+            document.getElementById('loginGoogleText').textContent = s.google;
+            document.getElementById('loginDemoText').textContent = s.demo;
+            document.getElementById('langPromptLabel').textContent = s.prompt;
+        }
+
+        function handleLoginLangChange(lang) {
+            localStorage.setItem('retail_lang', lang);
+            localStorage.setItem('retail_lang_explicit', lang);
+            // Add brief fade
+            const card = document.querySelector('.glass-panel');
+            card.style.transition = 'opacity 0.2s';
+            card.style.opacity = '0.5';
+            setTimeout(() => {
+                applyLoginStrings(lang);
+                card.style.opacity = '1';
+            }, 200);
+        }
+
+        // On load: apply saved or browser language
+        document.addEventListener('DOMContentLoaded', () => {
+            const saved = localStorage.getItem('retail_lang') || 'en';
+            const sel = document.getElementById('loginLangSelector');
+            if (sel) sel.value = saved;
+            applyLoginStrings(saved);
+        });
+    </script>
+</body>
+
+</html>
