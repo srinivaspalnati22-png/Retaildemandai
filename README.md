@@ -1,6 +1,6 @@
 # Smart Retail Demand Forecasting AI (NexusAI)
 
-A visually stunning, modern, and interactive prototype built for hackathon demonstrations. This application predicts retail product demand using simulated machine learning models, helping retailers prevent stockouts and optimize inventory.
+🚀 **Live Demo:** [https://retaildemandai-2.onrender.com](https://retaildemandai-2.onrender.com)
 
 ## Tech Stack
 -   **Frontend:** HTML5, Tailwind CSS (via CDN), Custom CSS Animations, Vanilla JavaScript, Chart.js.
@@ -23,7 +23,7 @@ A visually stunning, modern, and interactive prototype built for hackathon demon
     ```
 4.  **Run Application:** Start the Flask server by running:
     ```bash
-    python backend/app.py
+    python app.py
     ```
 5.  **Access on Browser:** Information on the terminal will display the local host url: typically `http://127.0.0.1:5000/`. CTRL+Click this link to view the app in your browser!
 
