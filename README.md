@@ -1,7 +1,7 @@
 # Smart Retail Demand Forecasting AI (NexusAI)
-new live demo link:https://retaildemandai-5.onrender.com
-new live demo link:https://retaildemandai-4.onrender.com
-🚀 **Live Demo:** [https://retaildemandai-2.onrender.com](https://retaildemandai-2.onrender.com)
+
+ 🚀 new live demo link:https://retaildemandai-4.onrender.com
+
 
 ## Tech Stack
 -   **Frontend:** HTML5, Tailwind CSS (via CDN), Custom CSS Animations, Vanilla JavaScript, Chart.js.
