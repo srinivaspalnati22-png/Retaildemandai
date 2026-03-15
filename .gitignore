@@ -22,6 +22,7 @@ instance/
 .webassets-cache
 
 # Data
+.gemini/
+brain/
 *.csv
-!static/data/dummy_template.csv
-!static/data/retail_dataset_100.csv
+!static/data/template.csv

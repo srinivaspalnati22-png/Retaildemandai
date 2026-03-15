@@ -9,8 +9,10 @@
 
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 relative z-10">
             <div>
-                <h2 class="font-heading font-bold text-2xl text-white mb-1" data-i18n="predict_velocity">Predict Product Velocity</h2>
-                <p class="text-sm text-slate-400" data-i18n="forecasting_subtitle">Neural network analysis across multiple temporal horizons.</p>
+                <h2 class="font-heading font-bold text-2xl text-white mb-1" data-i18n="predict_velocity">Predict Product
+                    Velocity</h2>
+                <p class="text-sm text-slate-400" data-i18n="forecasting_subtitle">Neural network analysis across
+                    multiple temporal horizons.</p>
             </div>
             <div class="flex bg-darkBg p-1 rounded-xl border border-darkBorder hidden">
                 <button class="px-4 py-2 rounded-lg text-sm font-medium bg-brand text-white shadow-md active"
@@ -25,17 +27,20 @@
         <div
             class="glass-card p-6 rounded-2xl border border-brand/20 mb-8 relative z-10 shadow-[0_0_30px_rgba(99,102,241,0.1)]">
             <h2 class="font-heading font-bold text-xl text-white mb-4"><i
-                    class="fas fa-radar text-brand-light mr-2"></i> <span data-i18n="select_product_forecast">Select Product for Demand Forecast</span></h2>
+                    class="fas fa-radar text-brand-light mr-2"></i> <span data-i18n="select_product_forecast">Select
+                    Product for Demand Forecast</span></h2>
 
             <div class="flex flex-col md:flex-row items-end gap-4 relative">
                 <div class="flex-1 w-full relative">
-                    <label class="text-xs text-slate-400 mb-2 block uppercase tracking-wider font-bold" data-i18n="analyzer_search_label">Search Product
+                    <label class="text-xs text-slate-400 mb-2 block uppercase tracking-wider font-bold"
+                        data-i18n="analyzer_search_label">Search Product
                         Configuration</label>
                     <div class="relative">
                         <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
                         <input type="text" id="analyzerSearchInput"
                             class="w-full bg-darkBg border border-darkBorder rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-brand transition-colors placeholder-slate-500"
-                            placeholder="Select product (Milk, Bread, Eggs...)" data-i18n-placeholder="analyzer_search_placeholder" autocomplete="off">
+                            placeholder="Select product (Milk, Bread, Eggs...)"
+                            data-i18n-placeholder="analyzer_search_placeholder" autocomplete="off">
                         <!-- Custom Dropdown populated by JS -->
                         <div id="analyzerDropdown"
                             class="absolute top-full left-0 right-0 mt-2 bg-darkCard border border-darkBorder rounded-xl shadow-xl max-h-60 overflow-y-auto z-[9999] hidden custom-scrollbar">
@@ -43,7 +48,8 @@
                     </div>
                 </div>
                 <button id="btnAnalyzeDemand"
-                    class="w-full md:w-auto px-8 py-3 rounded-xl font-bold bg-gradient-to-r from-brand to-brand-light text-white shadow-lg hover:shadow-brand/50 hover:-translate-y-1 transition-all disabled:opacity-50 disabled:cursor-not-allowed" data-i18n="btn_analyze_demand">
+                    class="w-full md:w-auto px-8 py-3 rounded-xl font-bold bg-gradient-to-r from-brand to-brand-light text-white shadow-lg hover:shadow-brand/50 hover:-translate-y-1 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    data-i18n="btn_analyze_demand">
                     Analyze Demand
                 </button>
             </div>
@@ -51,7 +57,8 @@
             <!-- V5.2 Feature: Visual Product Selection List -->
             <div class="mt-6 mb-2 relative z-10">
                 <h3 class="text-xs font-bold text-slate-400 mb-3 uppercase tracking-wider"><i
-                        class="fas fa-boxes text-brand-light mr-2"></i> <span data-i18n="quick_analyze_products">Quick Analyze Products</span></h3>
+                        class="fas fa-boxes text-brand-light mr-2"></i> <span data-i18n="quick_analyze_products">Quick
+                        Analyze Products</span></h3>
                 <div id="forecastProductList" class="flex overflow-x-auto gap-4 pb-4 custom-scrollbar">
                     <!-- JS will inject product cards here -->
                 </div>
@@ -60,7 +67,8 @@
             <!-- Loading State -->
             <div id="analyzerLoading" class="hidden mt-8 flex flex-col items-center justify-center p-8 space-y-4">
                 <div class="w-12 h-12 border-4 border-brand/30 border-t-brand rounded-full animate-spin"></div>
-                <p class="text-brand-light font-medium animate-pulse" data-i18n="analyzer_loading_text">Analyzing product demand...</p>
+                <p class="text-brand-light font-medium animate-pulse" data-i18n="analyzer_loading_text">Analyzing
+                    product demand...</p>
             </div>
 
             <!-- Analysis Results -->
@@ -74,12 +82,15 @@
                         </div>
                         <div>
                             <h4 class="text-red-500 font-bold mb-1" data-i18n="stock_alert">Stock Alert</h4>
-                            <p class="text-sm text-slate-300"><span data-i18n="analyzer_monthly_demand">Predicted Monthly Demand:</span> <span id="alertMonthlyDemand"
+                            <p class="text-sm text-slate-300"><span data-i18n="analyzer_monthly_demand">Predicted
+                                    Monthly Demand:</span> <span id="alertMonthlyDemand"
                                     class="font-bold text-white"></span></p>
-                            <p class="text-sm text-slate-300 mb-2"><span data-i18n="analyzer_current_stock">Current Stock:</span> <span id="alertCurrentStock"
-                                    class="font-bold text-white"></span></p>
+                            <p class="text-sm text-slate-300 mb-2"><span data-i18n="analyzer_current_stock">Current
+                                    Stock:</span> <span id="alertCurrentStock" class="font-bold text-white"></span></p>
                             <p class="text-sm text-red-400 font-medium"><i class="fas fa-arrow-right mr-1"></i>
-                                <span data-i18n="analyzer_rec_label">Recommendation: Reorder additional stock immediately.</span></p>
+                                <span data-i18n="analyzer_rec_label">Recommendation: Reorder additional stock
+                                    immediately.</span>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -92,10 +103,14 @@
                 <!-- Charts Container -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <!-- Weekly Line Chart -->
-                    <div class="glass-card rounded-2xl p-6 border border-darkBorder group hover:border-brand/40 transition-colors">
-                        <h4 class="text-xs font-bold text-slate-400 mb-4 uppercase tracking-wider flex justify-between items-center">
-                            <span><i class="fas fa-chart-line mr-2 text-brand"></i> <span data-i18n="analyzer_weekly_chart">Weekly Demand</span></span>
-                            <span class="text-[10px] px-2 py-0.5 bg-brand/10 text-brand rounded" data-i18n="chart_horizon_7d">7 Days</span>
+                    <div
+                        class="glass-card rounded-2xl p-6 border border-darkBorder group hover:border-brand/40 transition-colors">
+                        <h4
+                            class="text-xs font-bold text-slate-400 mb-4 uppercase tracking-wider flex justify-between items-center">
+                            <span><i class="fas fa-chart-line mr-2 text-brand"></i> <span
+                                    data-i18n="analyzer_weekly_chart">Weekly Demand</span></span>
+                            <span class="text-[10px] px-2 py-0.5 bg-brand/10 text-brand rounded"
+                                data-i18n="chart_horizon_7d">7 Days</span>
                         </h4>
                         <div class="h-64">
                             <canvas id="weeklyDemandChart"></canvas>
@@ -103,10 +118,14 @@
                     </div>
 
                     <!-- Monthly Bar Chart -->
-                    <div class="glass-card rounded-2xl p-6 border border-darkBorder group hover:border-accent/40 transition-colors">
-                        <h4 class="text-xs font-bold text-slate-400 mb-4 uppercase tracking-wider flex justify-between items-center">
-                            <span><i class="fas fa-chart-bar mr-2 text-accent"></i> <span data-i18n="analyzer_monthly_chart">Monthly Demand</span></span>
-                            <span class="text-[10px] px-2 py-0.5 bg-accent/10 text-accent rounded" data-i18n="chart_horizon_30d">30 Days</span>
+                    <div
+                        class="glass-card rounded-2xl p-6 border border-darkBorder group hover:border-accent/40 transition-colors">
+                        <h4
+                            class="text-xs font-bold text-slate-400 mb-4 uppercase tracking-wider flex justify-between items-center">
+                            <span><i class="fas fa-chart-bar mr-2 text-accent"></i> <span
+                                    data-i18n="analyzer_monthly_chart">Monthly Demand</span></span>
+                            <span class="text-[10px] px-2 py-0.5 bg-accent/10 text-accent rounded"
+                                data-i18n="chart_horizon_30d">30 Days</span>
                         </h4>
                         <div class="h-64">
                             <canvas id="monthlyDemandChart"></canvas>
@@ -127,7 +146,8 @@
                         <div
                             class="relative z-10 w-full flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                             <div>
-                                <h4 class="text-sm font-bold text-white mb-1" data-i18n="analyzer_insight_title">AI Demand Insight</h4>
+                                <h4 class="text-sm font-bold text-white mb-1" data-i18n="analyzer_insight_title">AI
+                                    Demand Insight</h4>
                                 <p id="analyzerInsightText" class="text-sm text-slate-300 leading-relaxed"></p>
                             </div>
                             <div id="analyzerTrendBadge" class="shrink-0">
