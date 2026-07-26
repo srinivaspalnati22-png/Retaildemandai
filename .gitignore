@@ -26,3 +26,5 @@ instance/
 brain/
 *.csv
 !static/data/template.csv
+
+.vercel

@@ -1,6 +1,7 @@
 # Smart Retail Demand Forecasting AI (NexusAI)
 
- 🚀 new live demo link:https://retaildemandai-4.onrender.com
+🚀 **Live Demo:** [https://smartretailai.vercel.app](https://smartretailai.vercel.app)
+
 
 
 ## Tech Stack
